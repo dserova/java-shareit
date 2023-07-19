@@ -25,7 +25,7 @@ import java.sql.SQLException;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class ShareItTests {
 
-
+    // deleteTimeStamp clean timestamp
     String deleteTimeStamp(String text) {
         String regex = "\"timestamp\": \\d{12,},";
         return text.replaceAll(regex, "");
