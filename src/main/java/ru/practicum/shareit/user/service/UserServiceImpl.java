@@ -29,8 +29,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public User createUser(User user) {
         String email = user.getEmail();
-        RegexpValidation ReValid = new RegexpValidation();
-        if (!email.matches(ReValid.checkEmailPattern())) {
+        RegexpValidation re = new RegexpValidation();
+        if (!email.matches(re.checkEmailPattern())) {
             throw new ResourceNotFoundException("Email not valid", HttpStatus.BAD_REQUEST);
         }
         User find = userRepository.findByEmail(email);
@@ -56,8 +56,8 @@ public class UserServiceImpl implements UserService {
                 }
             }
 
-            RegexpValidation ReValid = new RegexpValidation();
-            if (!email.matches(ReValid.checkEmailPattern())) {
+            RegexpValidation re = new RegexpValidation();
+            if (!email.matches(re.checkEmailPattern())) {
                 throw new ResourceNotFoundException("Email not valid", HttpStatus.BAD_REQUEST);
             }
             user.setEmail(userRequest.getEmail());

@@ -163,9 +163,9 @@ public class ShareItTests {
     private Integer port;
 
     void template(String description, String endpoint, String RequestBody, String ResponseBody, String RequestX, MediaType RequestType, MediaType ResponseType, HttpStatus StatusResponse, HttpMethod method) throws RuntimeException {
-        String X = "X-Sharer-User-Id";
+        String userId = "X-Sharer-User-Id";
         if (RequestX.isBlank()) {
-            X = "DEPRECATED-X-Sharer-User-Id";
+            userId = "DEPRECATED-X-Sharer-User-Id";
         }
         System.out.println("http://localhost:" + port + endpoint);
         // https://docs.spring.io/spring-framework/reference/testing/webtestclient.html
@@ -173,7 +173,7 @@ public class ShareItTests {
         WebTestClient client = WebTestClient.bindToServer().baseUrl("http://localhost:" + port).build();
         client.method(method).uri(endpoint)
                 .header("Content-Type", RequestType.toString())
-                .header(X, RequestX)
+                .header(userId, RequestX)
                 .bodyValue(RequestBody)
                 .exchange()
                 .expectAll(
