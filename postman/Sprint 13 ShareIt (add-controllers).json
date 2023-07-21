@@ -432,7 +432,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"errors\": [\n        {\n            \"code\": \"400 BAD_REQUEST\",\n            \"message\": \"email - должно иметь формат адреса электронной почты\"\n        }\n    ]\n}"
+							"body": "{\n    \"errors\": [\n        {\n            \"code\": \"400 BAD_REQUEST\",\n            \"message\": \"email - must be a well-formed email address\"\n        }\n    ]\n}"
 						}
 					]
 				},
@@ -2403,7 +2403,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"errors\": [\n        {\n            \"code\": \"400 BAD_REQUEST\",\n            \"message\": \"name - не должно быть пустым\"\n        }\n    ]\n}"
+							"body": "{\n    \"errors\": [\n        {\n            \"code\": \"400 BAD_REQUEST\",\n            \"message\": \"name - must not be blank\"\n        }\n    ]\n}"
 						}
 					]
 				},
