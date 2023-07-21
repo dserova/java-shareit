@@ -11,9 +11,9 @@ import java.util.Optional;
 
 @Repository
 public interface ItemRepository extends JpaRepository<Item, Long> {
-    Optional<List<Item>> findByOwner_Id(long owner_id);
+    Optional<List<Item>> findByOwner_Id(long ownerId);
 
-    Optional<Item> findByIdAndOwner_Id(long id, long owner_id);
+    Optional<Item> findByIdAndOwner_Id(long id, long ownerId);
 
     Optional<List<Item>> findDistinctByDescriptionContainsIgnoreCaseAndAvailableOrNameContainsIgnoreCaseAndAvailable(@NonNull @NotBlank String description, @NonNull Boolean available, @NonNull @NotBlank String name, @NonNull Boolean available2);
 }
