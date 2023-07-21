@@ -1,61 +1,59 @@
 package ru.practicum.shareit.item.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
-import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/items")
 public class ItemController {
-    @Autowired
-    private ModelMapper modelMapper;
 
-    private final ItemService itemService;
+    private final ModelMapper mapper;
 
-    private final String param = "X-Sharer-User-Id";
+    private final ItemService service;
 
-    public ItemController(ItemService itemService, UserRepository userRepository) {
-        super();
-        this.itemService = itemService;
-    }
+    private final String userIdParameterName = "X-Sharer-User-Id";
 
     @GetMapping
-    public List<Item> getAllItems(@RequestHeader(param) long userId) {
-        return itemService.getAllItems(userId).stream().map(item -> modelMapper.map(item, Item.class))
+    public List<ItemDto> getAllItems(@RequestHeader(userIdParameterName) long userId) {
+        return service.getAllItems(userId).stream().map(item -> mapper.map(item, ItemDto.class))
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public Item getItemById(@RequestHeader(param) long userId, @PathVariable(name = "id") Long id) {
-        Item item = itemService.getItemById(userId, id);
-        return modelMapper.map(item, Item.class);
+    public ItemDto getItemById(@RequestHeader(userIdParameterName) long userId, @PathVariable(name = "id") Long id) {
+        Item item = service.getItemById(userId, id);
+        return mapper.map(item, ItemDto.class);
     }
 
     @PostMapping
-    public Item createItem(@RequestHeader(param) long userId, @RequestBody ItemDto itemDto) {
-        Item itemRequest = modelMapper.map(itemDto, Item.class);
-        return itemService.createItem(userId, itemRequest);
+    public ItemDto createItem(@RequestHeader(userIdParameterName) long userId, @RequestBody ItemDto request) {
+        Item itemRequest = mapper.map(request, Item.class);
+        Item item = service.createItem(userId, itemRequest);
+        return mapper.map(item, ItemDto.class);
     }
 
     @PatchMapping("/{id}")
-    public Item updateItem(@RequestHeader(param) long userId, @PathVariable long id, @RequestBody ItemDto itemDto) {
-        return itemService.updateItem(userId, id, itemDto);
+    public ItemDto updateItem(@RequestHeader(userIdParameterName) long userId, @PathVariable long id, @RequestBody ItemDto request) {
+        Item item = service.updateItem(userId, id, request);
+        return mapper.map(item, ItemDto.class);
     }
 
     @DeleteMapping("/{id}")
-    void deleteItem(@RequestHeader(param) long userId, @PathVariable(name = "id") Long id) {
-        itemService.deleteItem(userId, id);
+    void deleteItem(@RequestHeader(userIdParameterName) long userId, @PathVariable(name = "id") Long id) {
+        service.deleteItem(userId, id);
     }
 
     @GetMapping("/search")
-    public List<Item> searchItem(@RequestHeader(param) long userId, @RequestParam(name = "text") String partOfName) {
-        return itemService.searchByName(userId, partOfName);
+    public List<ItemDto> getItemByName(@RequestHeader(userIdParameterName) long userId, @RequestParam(name = "text", defaultValue = "__{{ERROR_EXCEPTION}}__") String partOfName) {
+        return service.getItemByName(userId, partOfName).stream().map(item -> mapper.map(item, ItemDto.class))
+                .collect(Collectors.toList());
     }
 }

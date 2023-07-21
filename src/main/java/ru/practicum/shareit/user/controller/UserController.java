@@ -1,7 +1,7 @@
 package ru.practicum.shareit.user.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
@@ -11,44 +11,41 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(path = "/users")
 public class UserController {
-    @Autowired
-    private ModelMapper modelMapper;
 
-    private final UserService userService;
+    private final ModelMapper mapper;
 
-    public UserController(UserService userService) {
-        super();
-        this.userService = userService;
-    }
+    private final UserService service;
 
     @GetMapping
-    public List<User> getAllUsers() {
-        return userService.getAllUsers().stream().map(user -> modelMapper.map(user, User.class))
+    public List<UserDto> getAllUsers() {
+        return service.getAllUsers().stream().map(user -> mapper.map(user, UserDto.class))
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable(name = "id") Long id) {
-        User user = userService.getUserById(id);
-        return modelMapper.map(user, User.class);
+    public UserDto getUserById(@PathVariable(name = "id") Long id) {
+        User user = service.getUserById(id);
+        return mapper.map(user, UserDto.class);
     }
 
     @PostMapping
-    public User createUser(@RequestBody UserDto userDto) {
-        User userRequest = modelMapper.map(userDto, User.class);
-        User user = userService.createUser(userRequest);
-        return modelMapper.map(user, User.class);
+    public UserDto createUser(@RequestBody UserDto request) {
+        User userRequest = mapper.map(request, User.class);
+        User user = service.createUser(userRequest);
+        return mapper.map(user, UserDto.class);
     }
 
     @PatchMapping("/{id}")
-    public User updateUser(@PathVariable long id, @RequestBody UserDto userDto) {
-        return userService.updateUser(id, userDto);
+    public UserDto updateUser(@PathVariable long id, @RequestBody UserDto request) {
+        User user = service.updateUser(id, request);
+        return mapper.map(user, UserDto.class);
     }
 
     @DeleteMapping("/{id}")
     void deleteUser(@PathVariable(name = "id") Long id) {
-        userService.deleteUser(id);
+        service.deleteUser(id);
     }
 }

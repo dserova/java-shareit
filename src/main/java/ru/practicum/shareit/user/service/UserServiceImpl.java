@@ -1,25 +1,21 @@
 package ru.practicum.shareit.user.service;
 
-import org.springframework.http.HttpStatus;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.error.ResourceNotFoundException;
-import ru.practicum.shareit.share.RegexpValidation;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.error.ExceptionConflict;
+import ru.practicum.shareit.error.ExceptionNotFound;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-
-    public UserServiceImpl(UserRepository userRepository) {
-        super();
-        this.userRepository = userRepository;
-    }
 
     @Override
     public List<User> getAllUsers() {
@@ -27,65 +23,35 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User createUser(User user) {
-        String email = user.getEmail();
-        RegexpValidation re = new RegexpValidation();
-        if (!email.matches(re.checkEmailPattern())) {
-            throw new ResourceNotFoundException("Email not valid", HttpStatus.BAD_REQUEST);
+    public User createUser(User request) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new ExceptionConflict("User with same email exists");
         }
-        User find = userRepository.findByEmail(email);
-        if (find != null) {
-            throw new ResourceNotFoundException("Email not allowed", HttpStatus.CONFLICT);
-        }
-        return userRepository.save(user);
+        return userRepository.save(request);
     }
 
     @Override
-    public User updateUser(long id, UserDto userRequest) {
+    public User updateUser(long id, UserDto request) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found", HttpStatus.NOT_FOUND));
-
-        String email = userRequest.getEmail();
-        String name = userRequest.getName();
-
-        if (email != null) {
-            User find = userRepository.findByEmail(email);
-            if (find != null) {
-                if (id != 0 && id != find.getId()) {
-                    throw new ResourceNotFoundException("User with same email exists", HttpStatus.CONFLICT);
-                }
-            }
-
-            RegexpValidation re = new RegexpValidation();
-            if (!email.matches(re.checkEmailPattern())) {
-                throw new ResourceNotFoundException("Email not valid", HttpStatus.BAD_REQUEST);
-            }
-            user.setEmail(userRequest.getEmail());
+                .orElseThrow(() -> new ExceptionNotFound("User not found"));
+        if (userRepository.existsByIdNotAndEmail(id, request.getEmail())) {
+            throw new ExceptionConflict("User with same email exists");
         }
-
-        if (name != null) {
-            user.setName(userRequest.getName());
-        }
-
+        Optional.ofNullable(request.getName()).ifPresent(user::setName);
+        Optional.ofNullable(request.getEmail()).ifPresent(user::setEmail);
         return userRepository.save(user);
     }
 
     @Override
     public void deleteUser(long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found", HttpStatus.NOT_FOUND));
-
-        userRepository.delete(user);
+        userRepository.delete(userRepository.findById(id)
+                .orElseThrow(() -> new ExceptionNotFound("User not found")));
     }
 
     @Override
     public User getUserById(long id) {
-        Optional<User> result = userRepository.findById(id);
-        if (result.isPresent()) {
-            return result.get();
-        } else {
-            throw new ResourceNotFoundException("User not found", HttpStatus.NOT_FOUND);
-        }
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ExceptionNotFound("User not found"));
     }
 }
 

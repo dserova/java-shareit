@@ -1,107 +1,67 @@
 package ru.practicum.shareit.item.service;
 
-import org.springframework.http.HttpStatus;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.error.ResourceNotFoundException;
-import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.error.ExceptionNotFound;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
-import ru.practicum.shareit.request.model.ItemRequest;
-import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
 
     private final ItemRepository itemRepository;
 
     private final UserRepository userRepository;
 
-    public ItemServiceImpl(ItemRepository itemRepository, UserRepository userRepository) {
-        super();
-        this.itemRepository = itemRepository;
-        this.userRepository = userRepository;
-    }
-
     @Override
     public List<Item> getAllItems(long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found. Can't add item", HttpStatus.NOT_FOUND));
-        return itemRepository.findByOwner(user);
+        return itemRepository.findByOwner_Id(userId)
+                .orElseThrow(() -> new ExceptionNotFound("User not found. Can't add item"));
     }
 
     @Override
-    public Item createItem(long userId, Item item) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found. Can't add item", HttpStatus.NOT_FOUND));
-
-        item.setOwner(user);
-        return itemRepository.save(item);
+    public Item createItem(long userId, Item request) {
+        request.setOwner(userRepository.findById(userId)
+                .orElseThrow(() -> new ExceptionNotFound("User not found. Can't add item")));
+        return itemRepository.save(request);
     }
 
     @Override
-    public Item updateItem(long userId, long id, ItemDto itemRequest) {
-        Item item = itemRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Item not found", HttpStatus.NOT_FOUND));
+    public Item updateItem(long userId, long id, ItemDto request) {
 
-        String name = itemRequest.getName();
-        String description = itemRequest.getDescription();
-        Boolean available = itemRequest.getAvailable();
-        ItemRequest request = itemRequest.getRequest();
+        Item item = itemRepository.findByIdAndOwner_Id(id, userId)
+                .orElseThrow(() -> new ExceptionNotFound("Item not found"));
 
-        User find = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found. Can't add item", HttpStatus.NOT_FOUND));
+        Optional.ofNullable(request.getName()).ifPresent(item::setName);
+        Optional.ofNullable(request.getDescription()).ifPresent(item::setDescription);
+        Optional.ofNullable(request.getAvailable()).ifPresent(item::setAvailable);
+        Optional.ofNullable(request.getRequest()).ifPresent(item::setRequest);
 
-        if (find != null) {
-            if (item.getOwner().getId() != find.getId()) {
-                throw new ResourceNotFoundException("Item not found in items of '" + find.getId() + "' user", HttpStatus.NOT_FOUND);
-            }
-            item.setOwner(find);
-        }
-
-        if (name != null) {
-            item.setName(itemRequest.getName());
-        }
-        if (description != null) {
-            item.setDescription(itemRequest.getDescription());
-        }
-        if (available != null) {
-            item.setAvailable(itemRequest.getAvailable());
-        }
-        if (request != null) {
-            item.setRequest(itemRequest.getRequest());
-        }
         return itemRepository.save(item);
     }
 
     @Override
     public void deleteItem(long userId, long id) {
-        Item item = itemRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Item not found", HttpStatus.NOT_FOUND));
-        itemRepository.delete(item);
+        itemRepository.delete(itemRepository.findById(id)
+                .orElseThrow(() -> new ExceptionNotFound("Item not found")));
     }
 
     @Override
     public Item getItemById(long userId, long id) {
-        Optional<Item> result = itemRepository.findById(id);
-        if (result.isPresent()) {
-            return result.get();
-        } else {
-            throw new ResourceNotFoundException("Item not found", HttpStatus.NOT_FOUND);
-        }
+        return itemRepository.findById(id)
+                .orElseThrow(() -> new ExceptionNotFound("Item not found"));
     }
 
     @Override
-    public List<Item> searchByName(long userId, String partOfName) {
-        if (partOfName.isBlank()) {
-            return new ArrayList<>();
-        } else {
-            return itemRepository.findDistinctByDescriptionContainsIgnoreCaseAndAvailableOrNameContainsIgnoreCaseAndAvailable(partOfName, true, partOfName, true);
-        }
+    public List<Item> getItemByName(long userId, String partOfName) {
+        return itemRepository.findDistinctByDescriptionContainsIgnoreCaseAndAvailableOrNameContainsIgnoreCaseAndAvailable(partOfName, true, partOfName, true)
+                .orElseThrow(() -> new ExceptionNotFound("Item not found"));
     }
 }
 

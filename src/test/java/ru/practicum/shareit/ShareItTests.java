@@ -122,9 +122,6 @@ public class ShareItTests {
                     resbody = "{}";
                 }
 
-                if (!resbody.isEmpty() && (reqCode < 200 || reqCode >= 300) && rescontent.equals("application/json")) {
-                    resbody = "{}";
-                }
                 // not allowed timestamp in struct compare
                 resbody = deleteTimeStamp(resbody);
                 System.out.println("\n\n============================================\n\n");
