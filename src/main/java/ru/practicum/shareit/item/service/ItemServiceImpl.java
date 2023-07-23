@@ -2,7 +2,8 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.error.ExceptionNotFound;
+import ru.practicum.shareit.error.ItemNotFoundException;
+import ru.practicum.shareit.error.UserNotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
@@ -22,13 +23,13 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<Item> getAllItems(long userId) {
         return itemRepository.findByOwner_Id(userId)
-                .orElseThrow(() -> new ExceptionNotFound("User not found. Can't add item"));
+                .orElseThrow(UserNotFoundException::new);
     }
 
     @Override
     public Item createItem(long userId, Item request) {
         request.setOwner(userRepository.findById(userId)
-                .orElseThrow(() -> new ExceptionNotFound("User not found. Can't add item")));
+                .orElseThrow(UserNotFoundException::new));
         return itemRepository.save(request);
     }
 
@@ -36,7 +37,7 @@ public class ItemServiceImpl implements ItemService {
     public Item updateItem(long userId, long id, ItemDto request) {
 
         Item item = itemRepository.findByIdAndOwner_Id(id, userId)
-                .orElseThrow(() -> new ExceptionNotFound("Item not found"));
+                .orElseThrow(ItemNotFoundException::new);
 
         Optional.ofNullable(request.getName()).ifPresent(item::setName);
         Optional.ofNullable(request.getDescription()).ifPresent(item::setDescription);
@@ -49,19 +50,19 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public void deleteItem(long userId, long id) {
         itemRepository.delete(itemRepository.findById(id)
-                .orElseThrow(() -> new ExceptionNotFound("Item not found")));
+                .orElseThrow(ItemNotFoundException::new));
     }
 
     @Override
     public Item getItemById(long userId, long id) {
         return itemRepository.findById(id)
-                .orElseThrow(() -> new ExceptionNotFound("Item not found"));
+                .orElseThrow(ItemNotFoundException::new);
     }
 
     @Override
     public List<Item> getItemByName(long userId, String partOfName) {
         return itemRepository.findDistinctByDescriptionContainsIgnoreCaseAndAvailableOrNameContainsIgnoreCaseAndAvailable(partOfName, true, partOfName, true)
-                .orElseThrow(() -> new ExceptionNotFound("Item not found"));
+                .orElseThrow(ItemNotFoundException::new);
     }
 }
 

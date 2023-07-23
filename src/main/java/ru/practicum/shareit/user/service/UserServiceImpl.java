@@ -2,8 +2,8 @@ package ru.practicum.shareit.user.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.error.ExceptionConflict;
-import ru.practicum.shareit.error.ExceptionNotFound;
+import ru.practicum.shareit.error.UserConflictException;
+import ru.practicum.shareit.error.UserNotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User createUser(User request) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new ExceptionConflict("User with same email exists");
+            throw new UserConflictException();
         }
         return userRepository.save(request);
     }
@@ -33,9 +33,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public User updateUser(long id, UserDto request) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ExceptionNotFound("User not found"));
+                .orElseThrow(UserNotFoundException::new);
         if (userRepository.existsByIdNotAndEmail(id, request.getEmail())) {
-            throw new ExceptionConflict("User with same email exists");
+            throw new UserConflictException();
         }
         Optional.ofNullable(request.getName()).ifPresent(user::setName);
         Optional.ofNullable(request.getEmail()).ifPresent(user::setEmail);
@@ -45,13 +45,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(long id) {
         userRepository.delete(userRepository.findById(id)
-                .orElseThrow(() -> new ExceptionNotFound("User not found")));
+                .orElseThrow(UserNotFoundException::new));
     }
 
     @Override
     public User getUserById(long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new ExceptionNotFound("User not found"));
+                .orElseThrow(UserNotFoundException::new);
     }
 }
 

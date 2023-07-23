@@ -2181,7 +2181,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"code\": \"404 NOT_FOUND\",\n    \"message\": \"User not found. Can't add item\"\n}"
+							"body": "{\n    \"code\": \"404 NOT_FOUND\",\n    \"message\": \"User not found\"\n}"
 						}
 					]
 				},
