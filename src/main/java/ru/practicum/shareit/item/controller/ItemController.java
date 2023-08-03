@@ -33,7 +33,7 @@ public class ItemController {
 
     private final String userIdParameterName = "X-Sharer-User-Id";
 
-    private ItemResponseDto EnrichResponse(Item item, long userId, LocalDateTime currentTime) {
+    private ItemResponseDto enrichResponse(Item item, long userId, LocalDateTime currentTime) {
         ItemResponseDto itemResponseDto = mapper.map(item, ItemResponseDto.class);
         bookingService.getLastBookingById(item.getId(), userId, currentTime).ifPresent(booking -> itemResponseDto.setLastBooking(mapper.map(booking, BookingRequestDto.class)));
 
@@ -48,13 +48,13 @@ public class ItemController {
 
     @GetMapping
     public List<ItemResponseDto> getAllItems(@RequestHeader(userIdParameterName) long userId) {
-        return itemService.getAllItems(userId).stream().map(item -> EnrichResponse(item, userId, LocalDateTime.now())).collect(Collectors.toList());
+        return itemService.getAllItems(userId).stream().map(item -> enrichResponse(item, userId, LocalDateTime.now())).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     public ItemResponseDto getItemById(@RequestHeader(userIdParameterName) long userId, @PathVariable(name = "id") Long itemId) {
         Item item = itemService.getItemById(userId, itemId);
-        return EnrichResponse(item, userId, LocalDateTime.now());
+        return enrichResponse(item, userId, LocalDateTime.now());
     }
 
     @PostMapping
