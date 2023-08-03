@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.error.ItemNotFoundException;
 import ru.practicum.shareit.error.UserNotFoundException;
-import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemRequestDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.repository.UserRepository;
@@ -28,13 +28,15 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Item createItem(long userId, Item request) {
-        request.setOwner(userRepository.findById(userId)
-                .orElseThrow(UserNotFoundException::new));
+        if (!request.getName().isBlank()) {
+            request.setOwner(userRepository.findById(userId)
+                    .orElseThrow(UserNotFoundException::new));
+        }
         return itemRepository.save(request);
     }
 
     @Override
-    public Item updateItem(long userId, long id, ItemDto request) {
+    public Item updateItem(long userId, long id, ItemRequestDto request) {
 
         Item item = itemRepository.findByIdAndOwner_Id(id, userId)
                 .orElseThrow(ItemNotFoundException::new);
@@ -54,7 +56,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Item getItemById(long userId, long id) {
+    public Item getItemById(Long userId, long id) {
         return itemRepository.findById(id)
                 .orElseThrow(ItemNotFoundException::new);
     }

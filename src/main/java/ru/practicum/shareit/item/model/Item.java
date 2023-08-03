@@ -1,6 +1,8 @@
 package ru.practicum.shareit.item.model;
 
 import lombok.*;
+import ru.practicum.shareit.error.ItemBadRequestExcetion;
+import ru.practicum.shareit.error.UserNotFoundException;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
@@ -32,7 +34,26 @@ public class Item {
     @Column(name = "available")
     private Boolean available;
     @OneToOne
+    @JoinColumn(name = "user_id")
     private User owner;
     @OneToOne
     private ItemRequest request;
+
+    public void checkIsAvailable() {
+        if (!this.available) {
+            throw new ItemBadRequestExcetion();
+        }
+    }
+
+    public void checkIsOwner(long userId) {
+        if (this.owner.getId() == userId) {
+            throw new UserNotFoundException();
+        }
+    }
+
+    public void checkIsNotOwner(long userId) {
+        if (this.owner.getId() != userId) {
+            throw new UserNotFoundException();
+        }
+    }
 }

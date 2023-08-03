@@ -3,10 +3,18 @@ package ru.practicum.shareit.item.controller;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.booking.dto.BookingRequestDto;
+import ru.practicum.shareit.booking.service.BookingService;
+import ru.practicum.shareit.comment.dto.CommentRequestDto;
+import ru.practicum.shareit.comment.dto.CommentResponseDto;
+import ru.practicum.shareit.comment.model.Comment;
+import ru.practicum.shareit.comment.service.CommentService;
+import ru.practicum.shareit.item.dto.ItemRequestDto;
+import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,43 +25,65 @@ public class ItemController {
 
     private final ModelMapper mapper;
 
-    private final ItemService service;
+    private final ItemService itemService;
+
+    private final BookingService bookingService;
+
+    private final CommentService commentService;
 
     private final String userIdParameterName = "X-Sharer-User-Id";
 
+    private ItemResponseDto EnrichResponse(Item item, long userId, LocalDateTime currentTime) {
+        ItemResponseDto itemResponseDto = mapper.map(item, ItemResponseDto.class);
+        bookingService.getLastBookingById(item.getId(), userId, currentTime).ifPresent(booking -> itemResponseDto.setLastBooking(mapper.map(booking, BookingRequestDto.class)));
+
+        bookingService.getNextBookingById(item.getId(), userId, currentTime).ifPresent(booking -> itemResponseDto.setNextBooking(mapper.map(booking, BookingRequestDto.class)));
+
+        List<CommentResponseDto> comments = commentService.getCommentByItem(userId, item.getId()).stream().map(comment -> mapper.map(comment, CommentResponseDto.class)).collect(Collectors.toList());
+
+        itemResponseDto.setComments(comments);
+
+        return itemResponseDto;
+    }
+
     @GetMapping
-    public List<ItemDto> getAllItems(@RequestHeader(userIdParameterName) long userId) {
-        return service.getAllItems(userId).stream().map(item -> mapper.map(item, ItemDto.class))
-                .collect(Collectors.toList());
+    public List<ItemResponseDto> getAllItems(@RequestHeader(userIdParameterName) long userId) {
+        return itemService.getAllItems(userId).stream().map(item -> EnrichResponse(item, userId, LocalDateTime.now())).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public ItemDto getItemById(@RequestHeader(userIdParameterName) long userId, @PathVariable(name = "id") Long id) {
-        Item item = service.getItemById(userId, id);
-        return mapper.map(item, ItemDto.class);
+    public ItemResponseDto getItemById(@RequestHeader(userIdParameterName) long userId, @PathVariable(name = "id") Long itemId) {
+        Item item = itemService.getItemById(userId, itemId);
+        return EnrichResponse(item, userId, LocalDateTime.now());
     }
 
     @PostMapping
-    public ItemDto createItem(@RequestHeader(userIdParameterName) long userId, @RequestBody ItemDto request) {
-        Item itemRequest = mapper.map(request, Item.class);
-        Item item = service.createItem(userId, itemRequest);
-        return mapper.map(item, ItemDto.class);
+    public ItemRequestDto createItem(@RequestHeader(userIdParameterName) long userId, @RequestBody ItemRequestDto itemRequestDto) {
+        Item request = mapper.map(itemRequestDto, Item.class);
+        Item item = itemService.createItem(userId, request);
+        return mapper.map(item, ItemRequestDto.class);
     }
 
     @PatchMapping("/{id}")
-    public ItemDto updateItem(@RequestHeader(userIdParameterName) long userId, @PathVariable long id, @RequestBody ItemDto request) {
-        Item item = service.updateItem(userId, id, request);
-        return mapper.map(item, ItemDto.class);
+    public ItemRequestDto updateItem(@RequestHeader(userIdParameterName) long userId, @PathVariable(name = "id") long itemId, @RequestBody ItemRequestDto itemRequestDto) {
+        Item item = itemService.updateItem(userId, itemId, itemRequestDto);
+        return mapper.map(item, ItemRequestDto.class);
     }
 
     @DeleteMapping("/{id}")
-    void deleteItem(@RequestHeader(userIdParameterName) long userId, @PathVariable(name = "id") Long id) {
-        service.deleteItem(userId, id);
+    void deleteItem(@RequestHeader(userIdParameterName) long userId, @PathVariable(name = "id") Long itemId) {
+        itemService.deleteItem(userId, itemId);
     }
 
     @GetMapping("/search")
-    public List<ItemDto> getItemByName(@RequestHeader(userIdParameterName) long userId, @RequestParam(name = "text", defaultValue = "__{{ERROR_EXCEPTION}}__") String partOfName) {
-        return service.getItemByName(userId, partOfName).stream().map(item -> mapper.map(item, ItemDto.class))
-                .collect(Collectors.toList());
+    public List<ItemRequestDto> getItemByName(@RequestHeader(userIdParameterName) long userId, @RequestParam(name = "text", defaultValue = "__{{ERROR_EXCEPTION}}__") String partOfName) {
+        return itemService.getItemByName(userId, partOfName).stream().map(item -> mapper.map(item, ItemRequestDto.class)).collect(Collectors.toList());
+    }
+
+    // Comment endpoint
+    @PostMapping("/{id}/comment")
+    public CommentResponseDto createComment(@RequestHeader(userIdParameterName) long userId, @PathVariable(name = "id") long itemId, @RequestBody CommentRequestDto request) {
+        Comment comment = commentService.createComment(userId, itemId, mapper.map(request, Comment.class));
+        return mapper.map(comment, CommentResponseDto.class);
     }
 }

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.error.UserConflictException;
 import ru.practicum.shareit.error.UserNotFoundException;
-import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserRequestDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -24,21 +24,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createUser(User request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new UserConflictException();
-        }
         return userRepository.save(request);
     }
 
     @Override
-    public User updateUser(long id, UserDto request) {
+    public User updateUser(long id, UserRequestDto request) {
         User user = userRepository.findById(id)
                 .orElseThrow(UserNotFoundException::new);
+
         if (userRepository.existsByIdNotAndEmail(id, request.getEmail())) {
             throw new UserConflictException();
         }
+
         Optional.ofNullable(request.getName()).ifPresent(user::setName);
         Optional.ofNullable(request.getEmail()).ifPresent(user::setEmail);
+
         return userRepository.save(user);
     }
 

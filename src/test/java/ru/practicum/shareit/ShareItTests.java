@@ -18,6 +18,9 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @SpringBootTest(classes = ShareItApp.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
@@ -27,8 +30,69 @@ public class ShareItTests {
 
     // deleteTimeStamp clean timestamp
     String deleteTimeStamp(String text) {
-        String regex = "\"timestamp\": \\d{12,},";
-        return text.replaceAll(regex, "");
+        String regex = "(,)*[\\r\\n].+\"(timestamp|start|end|created)\": \".{19,27}\"(,)*";
+        String ret = text.replaceAll(regex, "");
+        return ret;
+    }
+
+    void delay(String text) {
+        String regex = "(setTimeout)\\D+(\\d{4})";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(text);
+        if (matcher.find()) {
+            long d = Long.parseLong(matcher.group(2));
+            try {
+                Thread.sleep(d);
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
+    LocalDateTime changeTime(String text, String name, LocalDateTime time) {
+        String regex = "(start|end).+(\\D)(\\d{1,3}).+('\\w')";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(text);
+        if (matcher.find()) {
+            if (matcher.group(1).equals(name)) {
+                boolean m = false;
+                if (matcher.group(2) != null) {
+                    m = matcher.group(2).equals("-");
+                }
+                long val = Long.parseLong(matcher.group(3));
+                switch (matcher.group(4)) {
+                    case "'s'":
+                        if (m) {
+                            time = time.minusSeconds(val);
+                        } else {
+                            time = time.plusSeconds(val);
+                        }
+                        break;
+                    case "'m'":
+                        if (m) {
+                            time = time.minusMinutes(val);
+                        } else {
+                            time = time.plusMinutes(val);
+                        }
+                        break;
+                    case "'h'":
+                        if (m) {
+                            time = time.minusHours(val);
+                        } else {
+                            time = time.plusHours(val);
+                        }
+                        break;
+                    case "'d'":
+                        if (m) {
+                            time = time.minusDays(val);
+                        } else {
+                            time = time.plusDays(val);
+                        }
+                        break;
+                }
+            }
+        }
+        return time;
     }
 
     // checkByPostmanExportFileCollection parsing the postman export file
@@ -63,6 +127,22 @@ public class ShareItTests {
                     }
                 }
 
+                // get envs
+                LocalDateTime start = LocalDateTime.now();
+                LocalDateTime end = LocalDateTime.now();
+                System.out.println(start);
+                System.out.println(end);
+                JsonNode events = request1.get("event");
+                for (JsonNode event : events) {
+                    if (event.get("script").has("exec") && event.get("listen").asText().equals("prerequest")) {
+                        for (JsonNode v : event.get("script").get("exec")) {
+                            start = changeTime(v.asText(), "start", start);
+                            end = changeTime(v.asText(), "end", end);
+                            delay(v.asText());
+                        }
+                    }
+                }
+
                 String reqMethod = request.get("method").asText();
                 JsonNode requestHeaders = request.get("header");
                 for (JsonNode header : requestHeaders) {
@@ -82,6 +162,9 @@ public class ShareItTests {
                 if (request.has("body")) {
                     if (request.get("body").has("raw")) {
                         reqbody = request.get("body").get("raw").asText();
+                        // set envs
+                        reqbody = reqbody.replaceAll("\\{\\{start.*\\}\\}", start.toString());
+                        reqbody = reqbody.replaceAll("\\{\\{end.*\\}\\}", end.toString());
                     }
                 }
 
@@ -195,10 +278,10 @@ public class ShareItTests {
 
 
     @Test
-    void caseTests13() throws IOException, SQLException {
+    void caseTests14() throws IOException, SQLException {
         // sprint13
-        // TESTS COUNT: 38
-        checkByPostmanExportFileCollection("postman/Sprint 13 ShareIt (add-controllers).json");
+        // TESTS COUNT: 112
+        checkByPostmanExportFileCollection("postman/Sprint 14 ShareIt (add-bookings).json");
     }
 
 }
