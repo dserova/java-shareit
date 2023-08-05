@@ -1,7 +1,6 @@
 package ru.practicum.shareit.booking.model;
 
 import lombok.*;
-import ru.practicum.shareit.error.ItemBadRequestExcetion;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
@@ -9,7 +8,8 @@ import javax.persistence.*;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 @Valid
 @Builder
 @AllArgsConstructor
@@ -41,34 +41,4 @@ public class Booking {
     @NonNull
     @Column(name = "booking_end")
     private LocalDateTime end;
-
-    public void approve(Boolean approved) {
-        if (this.status.equals(Status.APPROVED)) {
-            throw new ItemBadRequestExcetion();
-        }
-        this.status = approved ? Status.APPROVED : Status.REJECTED;
-    }
-
-    public void validStartEnd() {
-        if (this.getEnd().isBefore(LocalDateTime.now())) {
-            throw new ItemBadRequestExcetion();
-        }
-        if (this.getStart().isBefore(LocalDateTime.now())) {
-            throw new ItemBadRequestExcetion();
-        }
-        if (this.getEnd().isBefore(this.getStart())) {
-            throw new ItemBadRequestExcetion();
-        }
-        if (this.getEnd().isEqual(this.getStart())) {
-            throw new ItemBadRequestExcetion();
-        }
-    }
-
-    public void checkIsOwner(long userId) {
-        this.item.checkIsOwner(userId);
-    }
-
-    public void checkIsNotOwner(long userId) {
-        this.item.checkIsNotOwner(userId);
-    }
 }

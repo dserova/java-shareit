@@ -25,6 +25,46 @@ public class BookingServiceImpl implements BookingService {
 
     private final ItemRepository itemRepository;
 
+    public void approve(Booking booking, Boolean approved) {
+        if (booking.getStatus().equals(Status.APPROVED)) {
+            throw new ItemBadRequestExcetion();
+        }
+        booking.setStatus(approved ? Status.APPROVED : Status.REJECTED);
+    }
+
+    public void validStartEnd(Booking booking) {
+        if (booking.getEnd().isBefore(LocalDateTime.now())) {
+            throw new ItemBadRequestExcetion();
+        }
+        if (booking.getStart().isBefore(LocalDateTime.now())) {
+            throw new ItemBadRequestExcetion();
+        }
+        if (booking.getEnd().isBefore(booking.getStart())) {
+            throw new ItemBadRequestExcetion();
+        }
+        if (booking.getEnd().isEqual(booking.getStart())) {
+            throw new ItemBadRequestExcetion();
+        }
+    }
+
+    public void checkIsAvailable(Item item) {
+        if (!item.getAvailable()) {
+            throw new ItemBadRequestExcetion();
+        }
+    }
+
+    public void checkIsOwner(Item item, long userId) {
+        if (item.getOwner().getId() == userId) {
+            throw new UserNotFoundException();
+        }
+    }
+
+    public void checkIsNotOwner(Item item, long userId) {
+        if (item.getOwner().getId() != userId) {
+            throw new UserNotFoundException();
+        }
+    }
+
     private List<Booking> checkStateByBooker(Filter state, long userId) {
         userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
@@ -91,7 +131,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public Booking createBooking(long userId, long itemId, Booking request) {
-        request.validStartEnd();
+        validStartEnd(request);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
@@ -101,8 +141,8 @@ public class BookingServiceImpl implements BookingService {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(ItemNotFoundException::new);
 
-        item.checkIsAvailable();
-        item.checkIsOwner(userId);
+        checkIsAvailable(item);
+        checkIsOwner(item, userId);
 
         request.setItem(item);
 
@@ -115,8 +155,8 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.findByIdAndBooker_IdOrIdAndItem_Owner_Id(id, userId, id, userId)
                 .orElseThrow(BookingBadRequestExcetion::new);
 
-        booking.checkIsNotOwner(userId);
-        booking.approve(approved);
+        checkIsNotOwner(booking.getItem(), userId);
+        approve(booking, approved);
 
         return bookingRepository.save(booking);
     }

@@ -1,8 +1,10 @@
 package ru.practicum.shareit.item.service;
 
 import ru.practicum.shareit.item.dto.ItemRequestDto;
+import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.model.Item;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ItemService {
@@ -16,5 +18,7 @@ public interface ItemService {
 
     Item getItemById(Long userId, long id);
 
-    List<Item> getItemByName(long userId, String partOfName);
+    List<Item> search(long userId, String partOfName);
+
+    ItemResponseDto enrichResponse(Item item, long userId, LocalDateTime currentTime);
 }

@@ -1225,7 +1225,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"code\": \"409 CONFLICT\",\n    \"error\": \"User with same email exists\"\n}"
+							"body": "{\n    \"code\": \"409 CONFLICT\",\n    \"error\": \"Request error\"\n}"
 						}
 					]
 				},

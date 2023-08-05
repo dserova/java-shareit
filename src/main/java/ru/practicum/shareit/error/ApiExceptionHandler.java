@@ -1,10 +1,5 @@
 package ru.practicum.shareit.error;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.gson.Gson;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -18,8 +13,6 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 @RestControllerAdvice
@@ -170,38 +163,5 @@ public class ApiExceptionHandler {
                 "Unknown " + e.getName() + ": " + Objects.requireNonNull(e.getValue()),
                 currentMethod.getAnnotation(ResponseStatus.class).value()
         );
-    }
-
-    @Setter
-    @Getter
-    public static class ErrorItem {
-
-        @JsonInclude(JsonInclude.Include.NON_NULL)
-        private String code;
-        @JsonProperty("error")
-        private String message;
-
-        @Override
-        public String toString() {
-            Gson gson = new Gson();
-            return gson.toJson(this);
-        }
-    }
-
-    @Setter
-    @Getter
-    public static class ErrorResponse {
-
-        private List<ErrorItem> errors = new ArrayList<>();
-
-        public void addError(ErrorItem error) {
-            this.errors.add(error);
-        }
-
-        @Override
-        public String toString() {
-            Gson gson = new Gson();
-            return gson.toJson(this);
-        }
     }
 }
