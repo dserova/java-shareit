@@ -1,22 +1,18 @@
 package ru.practicum.shareit.error;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.google.gson.Gson;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 @RestControllerAdvice
@@ -59,6 +55,16 @@ public class ApiExceptionHandler {
         );
     }
 
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorItem handle(DataIntegrityViolationException e) throws NoSuchMethodException {
+        Method currentMethod = getClass().getMethod(handleName, e.getClass());
+        return handleCustomErrorItem(
+                "Request error",
+                currentMethod.getAnnotation(ResponseStatus.class).value()
+        );
+    }
+
     @ExceptionHandler(NullPointerException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorItem handle(NullPointerException e) throws NoSuchMethodException {
@@ -72,6 +78,36 @@ public class ApiExceptionHandler {
     @ExceptionHandler(UserNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorItem handle(UserNotFoundException e) throws NoSuchMethodException {
+        Method currentMethod = getClass().getMethod(handleName, e.getClass());
+        return handleCustomErrorItem(
+                Objects.requireNonNull(AnnotationUtils.getAnnotation(e.getClass(), ResponseStatus.class)).reason(),
+                currentMethod.getAnnotation(ResponseStatus.class).value()
+        );
+    }
+
+    @ExceptionHandler(BookingNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorItem handle(BookingNotFoundException e) throws NoSuchMethodException {
+        Method currentMethod = getClass().getMethod(handleName, e.getClass());
+        return handleCustomErrorItem(
+                Objects.requireNonNull(AnnotationUtils.getAnnotation(e.getClass(), ResponseStatus.class)).reason(),
+                currentMethod.getAnnotation(ResponseStatus.class).value()
+        );
+    }
+
+    @ExceptionHandler(BookingBadRequestExcetion.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorItem handle(BookingBadRequestExcetion e) throws NoSuchMethodException {
+        Method currentMethod = getClass().getMethod(handleName, e.getClass());
+        return handleCustomErrorItem(
+                Objects.requireNonNull(AnnotationUtils.getAnnotation(e.getClass(), ResponseStatus.class)).reason(),
+                currentMethod.getAnnotation(ResponseStatus.class).value()
+        );
+    }
+
+    @ExceptionHandler(CommentNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorItem handle(CommentNotFoundException e) throws NoSuchMethodException {
         Method currentMethod = getClass().getMethod(handleName, e.getClass());
         return handleCustomErrorItem(
                 Objects.requireNonNull(AnnotationUtils.getAnnotation(e.getClass(), ResponseStatus.class)).reason(),
@@ -99,36 +135,33 @@ public class ApiExceptionHandler {
         );
     }
 
-    @Setter
-    @Getter
-    public static class ErrorItem {
-
-        @JsonInclude(JsonInclude.Include.NON_NULL)
-        private String code;
-
-        private String message;
-
-        @Override
-        public String toString() {
-            Gson gson = new Gson();
-            return gson.toJson(this);
-        }
+    @ExceptionHandler(ItemBadRequestExcetion.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorItem handle(ItemBadRequestExcetion e) throws NoSuchMethodException {
+        Method currentMethod = getClass().getMethod(handleName, e.getClass());
+        return handleCustomErrorItem(
+                Objects.requireNonNull(AnnotationUtils.getAnnotation(e.getClass(), ResponseStatus.class)).reason(),
+                currentMethod.getAnnotation(ResponseStatus.class).value()
+        );
     }
 
-    @Setter
-    @Getter
-    public static class ErrorResponse {
+    @ExceptionHandler(FilterNotFoundException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorItem handle(FilterNotFoundException e) throws NoSuchMethodException {
+        Method currentMethod = getClass().getMethod(handleName, e.getClass());
+        return handleCustomErrorItem(
+                Objects.requireNonNull(AnnotationUtils.getAnnotation(e.getClass(), ResponseStatus.class)).reason() + e.getMessage(),
+                currentMethod.getAnnotation(ResponseStatus.class).value()
+        );
+    }
 
-        private List<ErrorItem> errors = new ArrayList<>();
-
-        public void addError(ErrorItem error) {
-            this.errors.add(error);
-        }
-
-        @Override
-        public String toString() {
-            Gson gson = new Gson();
-            return gson.toJson(this);
-        }
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorItem handle(MethodArgumentTypeMismatchException e) throws NoSuchMethodException {
+        Method currentMethod = getClass().getMethod(handleName, e.getClass());
+        return handleCustomErrorItem(
+                "Unknown " + e.getName() + ": " + Objects.requireNonNull(e.getValue()),
+                currentMethod.getAnnotation(ResponseStatus.class).value()
+        );
     }
 }

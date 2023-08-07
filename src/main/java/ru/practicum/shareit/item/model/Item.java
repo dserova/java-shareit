@@ -8,7 +8,8 @@ import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
-@Data
+@Getter
+@Setter
 @Valid
 @Builder
 @AllArgsConstructor
@@ -32,6 +33,7 @@ public class Item {
     @Column(name = "available")
     private Boolean available;
     @OneToOne
+    @JoinColumn(name = "user_id")
     private User owner;
     @OneToOne
     private ItemRequest request;
