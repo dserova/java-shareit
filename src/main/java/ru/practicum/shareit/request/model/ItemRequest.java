@@ -6,7 +6,7 @@ import ru.practicum.shareit.user.model.User;
 import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -15,23 +15,20 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "requests", schema = "Public", uniqueConstraints = {@UniqueConstraint(columnNames = {"name"})})
+@Table(name = "requests", schema = "Public")
 public class ItemRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "request_id")
-    private int id;
+    private long id;
     @NonNull
-    @NotBlank
-    @Column(name = "name")
-    private String name;
     @NotBlank
     @Column(name = "description")
     private String description;
     @NonNull
-    @NotBlank
+    @JoinColumn(name = "user_id")
     @OneToOne
     private User requestor;
     @Column(name = "created")
-    private LocalDate created;
+    private LocalDateTime created = LocalDateTime.now();
 }

@@ -1,17 +1,16 @@
 package ru.practicum.shareit.booking.service;
 
+import org.springframework.data.domain.Page;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Filter;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 public interface BookingService {
+    Page<Booking> getAllBookings(int start, int size, long userId, Filter state);
 
-    List<Booking> getAllBookings(long userId, Filter state);
-
-    List<Booking> getAllBookingsByOwner(long userId, Filter state);
+    Page<Booking> getAllBookingsByOwner(int start, int size, long userId, Filter state);
 
     Booking createBooking(long userId, long itemId, Booking booking);
 
