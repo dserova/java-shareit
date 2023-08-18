@@ -39,6 +39,7 @@ public class Generate {
         EasyRandom generator = new EasyRandom(parameters);
         return generator.nextObject(targetClass);
     }
+
     public <T> T randomNullId(Class<T> targetClass) {
         EasyRandomParameters parameters = new EasyRandomParameters()
                 .seed(12345L)

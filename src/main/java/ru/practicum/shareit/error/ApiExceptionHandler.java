@@ -174,6 +174,7 @@ public class ApiExceptionHandler {
                 currentMethod.getAnnotation(ResponseStatus.class).value()
         );
     }
+
     @ExceptionHandler(FilterNotFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorItem handle(FilterNotFoundException e) throws NoSuchMethodException {

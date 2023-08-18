@@ -38,8 +38,8 @@ public class ItemServiceImpl implements ItemService {
 
     private final ModelMapper mapper;
 
-    private final Paging paging =new Paging();
-    private final Mapping mapping=new Mapping();
+    private final Paging paging = new Paging();
+    private final Mapping mapping = new Mapping();
 
     public ItemResponseDto enrichResponse(Item item, long userId, LocalDateTime currentTime) {
         ItemResponseDto itemResponseDto = mapper.map(item, ItemResponseDto.class);
