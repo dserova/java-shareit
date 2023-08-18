@@ -212,8 +212,8 @@ public class IntegrationPostmanTest {
                 }
 
                 //language fix
-                //resbody = resbody.replaceAll("must be a well-formed email address", "должно иметь формат адреса электронной почты");
-                //resbody = resbody.replaceAll("must not be blank", "не должно быть пустым");
+                resbody = resbody.replaceAll("must be a well-formed email address", "должно иметь формат адреса электронной почты");
+                resbody = resbody.replaceAll("must not be blank", "не должно быть пустым");
 
                 // not allowed timestamp in struct compare
                 resbody = deleteTimeStamp(resbody);
