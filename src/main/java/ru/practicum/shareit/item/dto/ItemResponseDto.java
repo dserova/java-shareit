@@ -10,7 +10,6 @@ import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 public class ItemResponseDto {
     private long id;

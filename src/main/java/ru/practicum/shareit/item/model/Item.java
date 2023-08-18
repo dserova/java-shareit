@@ -11,8 +11,6 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @Setter
 @Valid
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "items", schema = "Public", uniqueConstraints = {@UniqueConstraint(columnNames = {"name"})})

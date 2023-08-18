@@ -11,20 +11,4 @@ public class ItemRequestNotFoundException extends RuntimeException {
         super();
     }
 
-    public ItemRequestNotFoundException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
-
-    public ItemRequestNotFoundException(final String message, HttpStatus httpStatus) {
-        super(message);
-        this.httpStatus = httpStatus;
-    }
-
-    public ItemRequestNotFoundException(final String message) {
-        super(message);
-    }
-
-    public ItemRequestNotFoundException(final Throwable cause) {
-        super(cause);
-    }
 }

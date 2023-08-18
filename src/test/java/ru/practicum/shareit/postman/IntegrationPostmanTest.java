@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.bind.annotation.ResponseBody;
 import ru.practicum.shareit.ShareItApp;
 
 import java.io.File;
@@ -210,6 +211,10 @@ public class IntegrationPostmanTest {
                 if (resbody.isEmpty() && rescontent.equals("application/json")) {
                     resbody = "{}";
                 }
+
+                //language fix
+                //resbody = resbody.replaceAll("must be a well-formed email address", "должно иметь формат адреса электронной почты");
+                //resbody = resbody.replaceAll("must not be blank", "не должно быть пустым");
 
                 // not allowed timestamp in struct compare
                 resbody = deleteTimeStamp(resbody);

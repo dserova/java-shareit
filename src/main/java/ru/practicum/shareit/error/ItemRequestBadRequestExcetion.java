@@ -11,20 +11,4 @@ public class ItemRequestBadRequestExcetion extends RuntimeException {
         super();
     }
 
-    public ItemRequestBadRequestExcetion(final String message, final Throwable cause) {
-        super(message, cause);
-    }
-
-    public ItemRequestBadRequestExcetion(final String message, HttpStatus httpStatus) {
-        super(message);
-        this.httpStatus = httpStatus;
-    }
-
-    public ItemRequestBadRequestExcetion(final String message) {
-        super(message);
-    }
-
-    public ItemRequestBadRequestExcetion(final Throwable cause) {
-        super(cause);
-    }
 }

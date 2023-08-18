@@ -10,8 +10,6 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @Setter
 @Valid
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "users", schema = "Public", uniqueConstraints = {@UniqueConstraint(columnNames = {"email"})})

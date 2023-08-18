@@ -10,21 +10,4 @@ public class BookingBadRequestExcetion extends RuntimeException {
     public BookingBadRequestExcetion() {
         super();
     }
-
-    public BookingBadRequestExcetion(final String message, final Throwable cause) {
-        super(message, cause);
-    }
-
-    public BookingBadRequestExcetion(final String message, HttpStatus httpStatus) {
-        super(message);
-        this.httpStatus = httpStatus;
-    }
-
-    public BookingBadRequestExcetion(final String message) {
-        super(message);
-    }
-
-    public BookingBadRequestExcetion(final Throwable cause) {
-        super(cause);
-    }
 }

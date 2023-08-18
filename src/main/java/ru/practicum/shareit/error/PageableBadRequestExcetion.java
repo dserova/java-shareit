@@ -11,20 +11,4 @@ public class PageableBadRequestExcetion extends RuntimeException {
         super();
     }
 
-    public PageableBadRequestExcetion(final String message, final Throwable cause) {
-        super(message, cause);
-    }
-
-    public PageableBadRequestExcetion(final String message, HttpStatus httpStatus) {
-        super(message);
-        this.httpStatus = httpStatus;
-    }
-
-    public PageableBadRequestExcetion(final String message) {
-        super(message);
-    }
-
-    public PageableBadRequestExcetion(final Throwable cause) {
-        super(cause);
-    }
 }

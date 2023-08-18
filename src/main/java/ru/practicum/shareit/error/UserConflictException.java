@@ -11,20 +11,4 @@ public class UserConflictException extends RuntimeException {
         super();
     }
 
-    public UserConflictException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
-
-    public UserConflictException(final String message, HttpStatus httpStatus) {
-        super(message);
-        this.httpStatus = httpStatus;
-    }
-
-    public UserConflictException(final String message) {
-        super(message);
-    }
-
-    public UserConflictException(final Throwable cause) {
-        super(cause);
-    }
 }

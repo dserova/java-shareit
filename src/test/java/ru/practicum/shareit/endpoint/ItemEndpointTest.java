@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import ru.practicum.shareit.comment.dto.CommentRequestDto;
 import ru.practicum.shareit.comment.model.Comment;
 import ru.practicum.shareit.comment.service.CommentService;
+import ru.practicum.shareit.error.*;
 import ru.practicum.shareit.helpers.Generate;
 import ru.practicum.shareit.item.controller.ItemController;
 import ru.practicum.shareit.item.dto.ItemRequestDto;
@@ -180,5 +181,67 @@ class ItemEndpointTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(jsonPath("$.id", is(comment.getId()), Long.class))
                 .andExpect(jsonPath("$.text", is(comment.getText())));
+    }
+
+    @Test
+    void error1() throws Exception {
+        when(service.updateItem(anyLong(), anyLong(), any()))
+                .thenThrow(new ItemBadRequestExcetion());
+
+        mvc.perform(patch("/items/999")
+                        .content(mapper.writeValueAsString(request))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", 999))
+                .andExpect(status().is4xxClientError())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void error2() throws Exception {
+        when(service.updateItem(anyLong(), anyLong(), any()))
+                .thenThrow(new ItemNotFoundException());
+
+        mvc.perform(patch("/items/999")
+                        .content(mapper.writeValueAsString(request))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", 999))
+                .andExpect(status().is4xxClientError())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void error3() throws Exception {
+        when(commentService.createComment(anyLong(), anyLong(), any()))
+                .thenThrow(new CommentNotFoundException());
+
+        mvc.perform(patch("/items/999/comment")
+                        .content(mapper.writeValueAsString(request))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", 999))
+                .andExpect(status().is4xxClientError())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void error4() throws Exception {
+        when(service.getAllItems(anyInt(), anyInt(), anyLong()))
+                .thenThrow(new PageableBadRequestExcetion());
+
+        when(service.enrichResponse(any(), anyLong(), any()))
+                .thenReturn(mapper.convertValue(item, ItemResponseDto.class));
+
+        mvc.perform(get("/items")
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.ALL)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", 1))
+                .andExpect(status().is4xxClientError())
+                .andDo(MockMvcResultHandlers.print());
     }
 }

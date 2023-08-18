@@ -9,6 +9,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import ru.practicum.shareit.error.ItemBadRequestExcetion;
+import ru.practicum.shareit.error.ItemNotFoundException;
+import ru.practicum.shareit.error.UserConflictException;
+import ru.practicum.shareit.error.UserNotFoundException;
 import ru.practicum.shareit.helpers.Generate;
 import ru.practicum.shareit.user.controller.UserController;
 import ru.practicum.shareit.user.dto.UserRequestDto;
@@ -44,10 +48,6 @@ class UserEndpointTest {
     private final User user = new Generate().random(User.class);
 
     private final UserRequestDto request = new ModelMapper().map(user, UserRequestDto.class);
-//    private final User user = new User(
-//            1L,
-//            "test",
-//            "test@test.com");
 
     @Test
     void createNewUser() throws Exception {
@@ -141,6 +141,35 @@ class UserEndpointTest {
                         .contentType(MediaType.ALL)
                         .accept(MediaType.ALL))
                 .andExpect(status().isOk())
+                .andDo(MockMvcResultHandlers.print());
+    }
+    @Test
+    void error1() throws Exception {
+        when(service.updateUser(anyLong(), any()))
+                .thenThrow(new UserConflictException());
+
+        mvc.perform(patch("/items/999")
+                        .content(mapper.writeValueAsString(request))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", 999))
+                .andExpect(status().is4xxClientError())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void error2() throws Exception {
+        when(service.updateUser(anyLong(), any()))
+                .thenThrow(new UserNotFoundException());
+
+        mvc.perform(patch("/items/999")
+                        .content(mapper.writeValueAsString(request))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", 999))
+                .andExpect(status().is4xxClientError())
                 .andDo(MockMvcResultHandlers.print());
     }
 }

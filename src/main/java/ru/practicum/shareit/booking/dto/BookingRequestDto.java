@@ -10,7 +10,6 @@ import ru.practicum.shareit.booking.model.Status;
 import java.time.LocalDateTime;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class BookingRequestDto {

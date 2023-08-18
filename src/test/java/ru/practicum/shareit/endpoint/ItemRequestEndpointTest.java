@@ -9,6 +9,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import ru.practicum.shareit.error.ItemBadRequestExcetion;
+import ru.practicum.shareit.error.ItemNotFoundException;
+import ru.practicum.shareit.error.ItemRequestBadRequestExcetion;
+import ru.practicum.shareit.error.ItemRequestNotFoundException;
 import ru.practicum.shareit.helpers.Generate;
 import ru.practicum.shareit.request.controller.ItemRequestController;
 import ru.practicum.shareit.request.dto.ItemRequestRequestDto;
@@ -23,8 +27,8 @@ import java.util.List;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -115,6 +119,34 @@ class ItemRequestEndpointTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(jsonPath("$.id", is(itemRequest.getId()), Long.class))
                 .andExpect(jsonPath("$.description", is(itemRequest.getDescription())));
+    }
+
+    @Test
+    void error1() throws Exception {
+        when(service.getItemRequestById(anyLong(), anyLong()))
+                .thenThrow(new ItemRequestBadRequestExcetion());
+
+        mvc.perform(patch("/requests/999")
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", 999))
+                .andExpect(status().is4xxClientError())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void error2() throws Exception {
+        when(service.getItemRequestById(anyLong(), anyLong()))
+                .thenThrow(new ItemRequestNotFoundException());
+
+        mvc.perform(patch("/requests/999")
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", 999))
+                .andExpect(status().is4xxClientError())
+                .andDo(MockMvcResultHandlers.print());
     }
 
 }

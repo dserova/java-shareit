@@ -15,6 +15,9 @@ import ru.practicum.shareit.booking.controller.BookingController;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.service.BookingService;
+import ru.practicum.shareit.error.BookingBadRequestExcetion;
+import ru.practicum.shareit.error.BookingNotFoundException;
+import ru.practicum.shareit.error.FilterNotFoundException;
 import ru.practicum.shareit.helpers.Generate;
 
 import java.nio.charset.StandardCharsets;
@@ -164,6 +167,64 @@ class BookingEndpointTest {
                         .accept(MediaType.ALL)
                         .header("X-Sharer-User-Id", 1))
                 .andExpect(status().isOk())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void error1() throws Exception {
+        when(service.updateBooking(anyLong(), anyLong(), anyBoolean()))
+                .thenThrow(new BookingBadRequestExcetion());
+
+        mvc.perform(patch("/bookings/999")
+                        .content(mapper.writeValueAsString(request))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", 999))
+                .andExpect(status().is4xxClientError())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void error2() throws Exception {
+        when(service.updateBooking(anyLong(), anyLong(), anyBoolean()))
+                .thenThrow(new BookingNotFoundException());
+
+        mvc.perform(patch("/bookings/999")
+                        .content(mapper.writeValueAsString(request))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", 999))
+                .andExpect(status().is4xxClientError())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void error3() throws Exception {
+        when(service.getAllBookings(anyInt(), anyInt(), anyLong(), any()))
+                .thenThrow(new FilterNotFoundException());
+
+        mvc.perform(get("/bookings?state=TEST")
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.ALL)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", 1))
+                .andExpect(status().is4xxClientError())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void error4() throws Exception {
+        when(service.getAllBookings(anyInt(), anyInt(), anyLong(), any()))
+                .thenThrow(new FilterNotFoundException("test"));
+
+        mvc.perform(get("/bookings?state=TEST")
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.ALL)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", 1))
+                .andExpect(status().is4xxClientError())
                 .andDo(MockMvcResultHandlers.print());
     }
 }
