@@ -141,6 +141,7 @@ class UserEndpointTest {
                 .andExpect(status().isOk())
                 .andDo(MockMvcResultHandlers.print());
     }
+
     @Test
     void error1() throws Exception {
         when(service.updateUser(anyLong(), any()))
