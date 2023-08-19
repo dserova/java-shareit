@@ -110,7 +110,7 @@ public class BookingDBTest {
         Booking newItem = before();
         try {
             bookingService.getAllBookings(0, 1, newItem.getItem().getOwner().getId(), Filter.ERROR);
-        } catch(FilterNotFoundException e) {
+        } catch (FilterNotFoundException e) {
             assertThat(e.getClass(), equalTo(FilterNotFoundException.class));
         }
     }
@@ -120,7 +120,7 @@ public class BookingDBTest {
         Booking newItem = before();
         try {
             bookingService.getAllBookingsByOwner(0, 1, newItem.getItem().getOwner().getId(), Filter.ERROR);
-        } catch(FilterNotFoundException e) {
+        } catch (FilterNotFoundException e) {
             assertThat(e.getClass(), equalTo(FilterNotFoundException.class));
         }
     }
