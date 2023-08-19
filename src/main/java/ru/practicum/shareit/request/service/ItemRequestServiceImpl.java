@@ -11,7 +11,6 @@ import ru.practicum.shareit.helpers.Mapping;
 import ru.practicum.shareit.helpers.Paging;
 import ru.practicum.shareit.item.dto.ItemResponseShortDto;
 import ru.practicum.shareit.item.repository.ItemRepository;
-import ru.practicum.shareit.request.dto.ItemRequestRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestResponseWithItemsDto;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
@@ -83,21 +82,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                         .orElseThrow(UserNotFoundException::new)
         );
         return itemRequestRepository.save(request);
-    }
-
-    @Override
-    @Transactional
-    public ItemRequest updateItemRequest(long id, ItemRequestRequestDto request) {
-        ItemRequest itemRequest = itemRequestRepository.findById(id)
-                .orElseThrow(UserNotFoundException::new);
-        return itemRequestRepository.save(itemRequest);
-    }
-
-    @Override
-    @Transactional
-    public void deleteItemRequest(long id) {
-        itemRequestRepository.delete(itemRequestRepository.findById(id)
-                .orElseThrow(UserNotFoundException::new));
     }
 
     @Override

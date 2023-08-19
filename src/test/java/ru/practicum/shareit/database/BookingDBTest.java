@@ -11,6 +11,7 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Filter;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.service.BookingService;
+import ru.practicum.shareit.error.FilterNotFoundException;
 import ru.practicum.shareit.helpers.Generate;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
@@ -23,6 +24,7 @@ import java.time.LocalDateTime;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.IsNull.notNullValue;
 
 @Transactional
@@ -51,7 +53,7 @@ public class BookingDBTest {
     }
 
     @Test
-    void createItem() {
+    void createBooking() {
         Booking newItem = before();
         Booking resultElement = bookingService.getBookingById(newItem.getBooker().getId(), newItem.getId());
         assertThat(resultElement.getId(), notNullValue());
@@ -60,7 +62,7 @@ public class BookingDBTest {
     }
 
     @Test
-    void getAllItems() {
+    void getAllBookings() {
         Booking newItem = before();
         Page<Booking> resultElement = bookingService.getAllBookings(0, 1, newItem.getBooker().getId(), Filter.ALL);
         assertThat(resultElement.getContent().get(0).getId(), notNullValue());
@@ -72,7 +74,7 @@ public class BookingDBTest {
     }
 
     @Test
-    void getAllItemsByOwner() {
+    void getAllBookingsByOwner() {
         Booking newItem = before();
         Page<Booking> resultElement = bookingService.getAllBookingsByOwner(0, 1, newItem.getItem().getOwner().getId(), Filter.ALL);
         assertThat(resultElement.getContent().get(0).getId(), notNullValue());
@@ -84,7 +86,7 @@ public class BookingDBTest {
     }
 
     @Test
-    void getItem() {
+    void getBooking() {
         Booking newItem = before();
         Booking resultElement = bookingService.getNextBookingById(newItem.getItem().getId(), newItem.getItem().getOwner().getId(), LocalDateTime.now()).orElseThrow();
         assertThat(resultElement.getId(), notNullValue());
@@ -93,6 +95,34 @@ public class BookingDBTest {
         assertThat(resultElement.getStatus(), equalTo(booking.getStatus()));
         assertThat(resultElement.getStart(), equalTo(booking.getStart()));
         assertThat(resultElement.getEnd(), equalTo(booking.getEnd()));
+    }
+
+    @Test
+    void deleteBooking() {
+        Booking newItem = before();
+        bookingService.deleteBooking(newItem.getItem().getOwner().getId(), newItem.getId());
+        Booking resultElement = bookingService.getNextBookingById(newItem.getItem().getId(), newItem.getItem().getOwner().getId(), LocalDateTime.now()).orElse(null);
+        assertThat(resultElement, nullValue());
+    }
+
+    @Test
+    void getAllBookingsFail() {
+        Booking newItem = before();
+        try {
+            bookingService.getAllBookings(0, 1, newItem.getItem().getOwner().getId(), Filter.ERROR);
+        } catch(FilterNotFoundException e) {
+            assertThat(e.getClass(), equalTo(FilterNotFoundException.class));
+        }
+    }
+
+    @Test
+    void getAllBookingsByOwnerFail() {
+        Booking newItem = before();
+        try {
+            bookingService.getAllBookingsByOwner(0, 1, newItem.getItem().getOwner().getId(), Filter.ERROR);
+        } catch(FilterNotFoundException e) {
+            assertThat(e.getClass(), equalTo(FilterNotFoundException.class));
+        }
     }
 
 }

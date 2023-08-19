@@ -41,15 +41,4 @@ public class ItemRequestController {
         ItemRequest itemRequest = itemRequestService.createItemRequest(userId, request);
         return mapper.map(itemRequest, ItemRequestResponseDto.class);
     }
-
-//    @PatchMapping("/{id}")
-//    public ItemRequestResponseDto updateItemRequest(@PathVariable(name = "id") long id, @RequestBody ItemRequestRequestDto itemRequestRequestDto) {
-//        ItemRequest itemRequest = itemRequestService.updateItemRequest(id, itemRequestRequestDto);
-//        return mapper.map(itemRequest, ItemRequestResponseDto.class);
-//    }
-//
-//    @DeleteMapping("/{id}")
-//    void deleteItemRequest(@PathVariable(name = "id") Long id) {
-//        itemRequestService.deleteItemRequest(id);
-//    }
 }

@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.Booking;
@@ -68,7 +69,7 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-    private org.springframework.data.domain.Page<Booking> checkStateByBooker(Filter state, long userId, Pageable pageable) {
+    private Page<Booking> checkStateByBooker(Filter state, long userId, Pageable pageable) {
         userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
         switch (state) {
@@ -95,7 +96,7 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-    private org.springframework.data.domain.Page<Booking> checkStateByOwner(Filter state, long userId, Pageable pageable) {
+    private Page<Booking> checkStateByOwner(Filter state, long userId, Pageable pageable) {
         userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
         switch (state) {
@@ -123,12 +124,12 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public org.springframework.data.domain.Page<Booking> getAllBookings(int start, int pageSize, long userId, Filter state) {
+    public Page<Booking> getAllBookings(int start, int pageSize, long userId, Filter state) {
         return checkStateByBooker(state, userId, paging.getPageable(start, pageSize));
     }
 
     @Override
-    public org.springframework.data.domain.Page<Booking> getAllBookingsByOwner(int start, int pageSize, long userId, Filter state) {
+    public Page<Booking> getAllBookingsByOwner(int start, int pageSize, long userId, Filter state) {
         return checkStateByOwner(state, userId, paging.getPageable(start, pageSize));
     }
 

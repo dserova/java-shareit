@@ -126,7 +126,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public org.springframework.data.domain.Page<Item> search(int start, int pageSize, long userId, String partOfName) {
+    public Page<Item> search(int start, int pageSize, long userId, String partOfName) {
         return itemRepository.search(partOfName, paging.getPageable(start, pageSize))
                 .orElseThrow(ItemNotFoundException::new);
     }
