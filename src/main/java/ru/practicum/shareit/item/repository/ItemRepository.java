@@ -15,12 +15,10 @@ import java.util.Optional;
 
 @Repository
 public interface ItemRepository extends JpaRepository<Item, Long> {
-    // get items with User.id (owner)
     Optional<List<Item>> findByOwner_Id(long ownerId);
 
     Optional<Page<Item>> findByOwner_Id(long ownerId, Pageable pageable);
 
-    // get item with Item.id and User.id (owner). Check correct User as Owner
     Optional<Item> findByIdAndOwner_Id(long id, long ownerId);
 
     List<Item> findByRequest_Id(long requestId);
@@ -29,12 +27,16 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             "where " +
             "i.available=TRUE " +
             "and " +
+            "trim(:text)<>'' " +
+            "and " +
             "upper(concat(i.name, ',,,', i.description)) like upper(concat('%', :text, '%'))")
     Optional<Page<Item>> search(@NonNull @NotBlank @Param("text") String text, Pageable pageable);
 
     @Query("select i from Item i " +
             "where " +
             "i.available=TRUE " +
+            "and " +
+            "trim(:text)<>'' " +
             "and " +
             "upper(concat(i.name, ',,,', i.description)) like upper(concat('%', :text, '%'))")
     Optional<List<Item>> search(@NonNull @NotBlank @Param("text") String text);

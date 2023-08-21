@@ -32,8 +32,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     private final ItemRepository itemRepository;
 
     private final Paging paging = new Paging();
-    private final Mapping mapping = new Mapping();
 
+    private final Mapping mapping = new Mapping();
 
     private List<ItemRequestResponseWithItemsDto> getItemRequestResponseWithItemsDtos(List<ItemRequest> itemRequests) {
         return itemRequests.stream().map(this::getItemRequestResponseWithItemsDto
@@ -45,14 +45,11 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 itemRequest,
                 ItemRequestResponseWithItemsDto.class
         );
-
         List<ItemResponseShortDto> items = mapping.mapList(
                 itemRepository.findByRequest_Id(response.getId()),
                 ItemResponseShortDto.class
         );
-
         response.setItems(items);
-
         return response;
     }
 

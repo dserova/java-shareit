@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @RequestMapping(path = "/users")
 public class UserController {
-
     private final ModelMapper mapper;
 
     private final UserService userService;

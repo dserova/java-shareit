@@ -17,7 +17,6 @@ import ru.practicum.shareit.user.repository.UserRepository;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 public class CommentRepositoryTest {
-
     @Autowired
     private TestEntityManager em;
 

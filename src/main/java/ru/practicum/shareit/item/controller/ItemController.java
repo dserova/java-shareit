@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @RequestMapping("/items")
 public class ItemController {
-
     private final ModelMapper mapper;
 
     private final ItemService itemService;
@@ -30,7 +29,7 @@ public class ItemController {
     private final String userIdParameterName = "X-Sharer-User-Id";
 
     @GetMapping
-    public List<ItemResponseDto> getAllItems(@RequestParam(name = "from", defaultValue = "0") int from,@RequestParam(name = "size", defaultValue = "10") int size,@RequestHeader(userIdParameterName) long userId) {
+    public List<ItemResponseDto> getAllItems(@RequestParam(name = "from", defaultValue = "0") int from, @RequestParam(name = "size", defaultValue = "10") int size, @RequestHeader(userIdParameterName) long userId) {
         return itemService.getAllItems(from, size, userId).stream().map(
                 item -> itemService.enrichResponse(item, userId, LocalDateTime.now())
         ).collect(Collectors.toList());
@@ -61,7 +60,7 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<ItemRequestDto> search(@RequestParam(name = "from", defaultValue = "0") int from,@RequestParam(name = "size", defaultValue = "10") int size,@RequestHeader(userIdParameterName) long userId, @RequestParam(name = "text", defaultValue = "__{{ERROR_EXCEPTION}}__") String partOfName) {
+    public List<ItemRequestDto> search(@RequestParam(name = "from", defaultValue = "0") int from, @RequestParam(name = "size", defaultValue = "10") int size, @RequestHeader(userIdParameterName) long userId, @RequestParam(name = "text", defaultValue = "") String partOfName) {
         return itemService.search(from, size, userId, partOfName).stream().map(item -> mapper.map(item, ItemRequestDto.class)).collect(Collectors.toList());
     }
 

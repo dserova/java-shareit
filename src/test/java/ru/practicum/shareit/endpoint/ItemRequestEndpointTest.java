@@ -32,6 +32,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = ItemRequestController.class)
 class ItemRequestEndpointTest {
+    private final ItemRequest itemRequest = new Generate().random(ItemRequest.class);
+
+    private final ItemRequestRequestDto request = new ModelMapper().map(itemRequest, ItemRequestRequestDto.class);
 
     @Autowired
     ObjectMapper mapper;
@@ -42,16 +45,10 @@ class ItemRequestEndpointTest {
     @Autowired
     private MockMvc mvc;
 
-
-    private final ItemRequest itemRequest = new Generate().random(ItemRequest.class);
-
-    private final ItemRequestRequestDto request = new ModelMapper().map(itemRequest, ItemRequestRequestDto.class);
-
     @Test
     void createItem() throws Exception {
         when(service.createItemRequest(anyLong(), any()))
                 .thenReturn(itemRequest);
-
         mvc.perform(post("/requests")
                         .content(mapper.writeValueAsString(request))
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -68,10 +65,8 @@ class ItemRequestEndpointTest {
     void getAllItem() throws Exception {
         List<ItemRequestResponseWithItemsDto> itemRequests = new ArrayList<>();
         itemRequests.add(mapper.convertValue(itemRequest, ItemRequestResponseWithItemsDto.class));
-
         when(service.getAllItemRequests(anyLong()))
                 .thenReturn(itemRequests);
-
         mvc.perform(get("/requests")
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.ALL)
@@ -87,10 +82,8 @@ class ItemRequestEndpointTest {
     void getAllItemByPage() throws Exception {
         List<ItemRequestResponseWithItemsDto> itemRequests = new ArrayList<>();
         itemRequests.add(mapper.convertValue(itemRequest, ItemRequestResponseWithItemsDto.class));
-
         when(service.getAllItemRequests(anyLong(), anyInt(), anyInt()))
                 .thenReturn(itemRequests);
-
         mvc.perform(get("/requests/all")
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.ALL)
@@ -106,7 +99,6 @@ class ItemRequestEndpointTest {
     void getItem() throws Exception {
         when(service.getItemRequestById(anyLong(), anyLong()))
                 .thenReturn(mapper.convertValue(itemRequest, ItemRequestResponseWithItemsDto.class));
-
         mvc.perform(get("/requests/1")
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.ALL)
@@ -122,7 +114,6 @@ class ItemRequestEndpointTest {
     void error1() throws Exception {
         when(service.getItemRequestById(anyLong(), anyLong()))
                 .thenThrow(new ItemRequestBadRequestExcetion());
-
         mvc.perform(patch("/requests/999")
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -136,7 +127,6 @@ class ItemRequestEndpointTest {
     void error2() throws Exception {
         when(service.getItemRequestById(anyLong(), anyLong()))
                 .thenThrow(new ItemRequestNotFoundException());
-
         mvc.perform(patch("/requests/999")
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -145,5 +135,4 @@ class ItemRequestEndpointTest {
                 .andExpect(status().is4xxClientError())
                 .andDo(MockMvcResultHandlers.print());
     }
-
 }

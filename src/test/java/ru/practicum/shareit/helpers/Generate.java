@@ -34,8 +34,6 @@ public class Generate {
                         LocalDateTime.now().plusDays(30)
                 ).getRandomValue())
                 .ignoreRandomizationErrors(true);
-
-
         EasyRandom generator = new EasyRandom(parameters);
         return generator.nextObject(targetClass);
     }
@@ -52,18 +50,8 @@ public class Generate {
                 .collectionSizeRange(1, 10)
                 .scanClasspathForConcreteTypes(true)
                 .overrideDefaultInitialization(false)
-//                .randomize(named("start").and(ofType(LocalDateTime.class)), () -> new LocalDateTimeRangeRandomizer(
-//                        LocalDateTime.now().plusSeconds(15),
-//                        LocalDateTime.now().plusDays(1)
-//                ).getRandomValue())
-//                .randomize(named("end").and(ofType(LocalDateTime.class)), () -> new LocalDateTimeRangeRandomizer(
-//                        LocalDateTime.now().plusDays(1),
-//                        LocalDateTime.now().plusDays(30)
-//                ).getRandomValue())
                 .ignoreRandomizationErrors(true)
                 .excludeField(named("id").and(inClass(targetClass)));
-
-
         EasyRandom generator = new EasyRandom(parameters);
         return generator.nextObject(targetClass);
     }

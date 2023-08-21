@@ -33,6 +33,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = UserController.class)
 class UserEndpointTest {
+    private final User user = new Generate().random(User.class);
+
+    private final UserRequestDto request = new ModelMapper().map(user, UserRequestDto.class);
 
     @Autowired
     ObjectMapper mapper;
@@ -43,15 +46,10 @@ class UserEndpointTest {
     @Autowired
     private MockMvc mvc;
 
-    private final User user = new Generate().random(User.class);
-
-    private final UserRequestDto request = new ModelMapper().map(user, UserRequestDto.class);
-
     @Test
     void createNewUser() throws Exception {
         when(service.createUser(any()))
                 .thenReturn(user);
-
         mvc.perform(post("/users")
                         .content(mapper.writeValueAsString(request))
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -68,7 +66,6 @@ class UserEndpointTest {
     void updateUser() throws Exception {
         when(service.updateUser(anyLong(), any()))
                 .thenReturn(user);
-
         mvc.perform(patch("/users/1")
                         .content(mapper.writeValueAsString(request))
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -85,7 +82,6 @@ class UserEndpointTest {
     void updateUserFail() throws Exception {
         when(service.updateUser(anyLong(), any()))
                 .thenReturn(user);
-
         mvc.perform(put("/users/3")
                         .content(mapper.writeValueAsString(request))
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -99,10 +95,8 @@ class UserEndpointTest {
     void getAllUser() throws Exception {
         List<User> users = new ArrayList<>();
         users.add(user);
-
         when(service.getAllUsers())
                 .thenReturn(users);
-
         mvc.perform(get("/users")
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.ALL)
@@ -118,7 +112,6 @@ class UserEndpointTest {
     void getUser() throws Exception {
         when(service.getUserById(anyLong()))
                 .thenReturn(user);
-
         mvc.perform(get("/users/1")
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.ALL)
@@ -133,7 +126,6 @@ class UserEndpointTest {
     @Test
     void deleteItem() throws Exception {
         doNothing().when(service).deleteUser(anyLong());
-
         mvc.perform(delete("/users/1")
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.ALL)
@@ -146,7 +138,6 @@ class UserEndpointTest {
     void error1() throws Exception {
         when(service.updateUser(anyLong(), any()))
                 .thenThrow(new UserConflictException());
-
         mvc.perform(patch("/items/999")
                         .content(mapper.writeValueAsString(request))
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -161,7 +152,6 @@ class UserEndpointTest {
     void error2() throws Exception {
         when(service.updateUser(anyLong(), any()))
                 .thenThrow(new UserNotFoundException());
-
         mvc.perform(patch("/items/999")
                         .content(mapper.writeValueAsString(request))
                         .characterEncoding(StandardCharsets.UTF_8)

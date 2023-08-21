@@ -17,7 +17,6 @@ import java.util.List;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 public class ItemRepositoryTest {
-
     @Autowired
     private TestEntityManager em;
 

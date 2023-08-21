@@ -8,7 +8,6 @@ import java.util.List;
 
 @Getter
 public class ErrorResponse {
-
     private final List<ErrorItem> errors = new ArrayList<>();
 
     public void addError(ErrorItem error) {

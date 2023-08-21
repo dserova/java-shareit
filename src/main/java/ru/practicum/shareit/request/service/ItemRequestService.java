@@ -10,7 +10,7 @@ public interface ItemRequestService {
 
     List<ItemRequestResponseWithItemsDto> getAllItemRequests(long userId, int start, int size);
 
-    ItemRequest createItemRequest(long userId,ItemRequest itemRequest);
+    ItemRequest createItemRequest(long userId, ItemRequest itemRequest);
 
     ItemRequestResponseWithItemsDto getItemRequestById(long id, long userId);
 }

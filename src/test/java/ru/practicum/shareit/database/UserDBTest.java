@@ -20,11 +20,12 @@ import static org.hamcrest.core.IsNull.notNullValue;
 @Transactional
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @TestPropertySource(properties = {"db.name=test"})
-@SpringBootTest(
-        webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 public class UserDBTest {
     private final UserService userService;
+
     private final User user = new Generate().random(User.class);
+
     private final UserRequestDto userUpdate = new Generate().random(UserRequestDto.class);
 
     User before() {

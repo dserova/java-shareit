@@ -26,7 +26,6 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
-
     private final ItemRepository itemRepository;
 
     private final ItemRequestRepository itemRequestRepository;
@@ -34,31 +33,28 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
 
     private final BookingService bookingService;
+
     private final CommentService commentService;
 
     private final ModelMapper mapper;
 
     private final Paging paging = new Paging();
+
     private final Mapping mapping = new Mapping();
 
     public ItemResponseDto enrichResponse(Item item, long userId, LocalDateTime currentTime) {
         ItemResponseDto itemResponseDto = mapper.map(item, ItemResponseDto.class);
-
         bookingService.getLastBookingById(item.getId(), userId, currentTime).ifPresent(
                 booking -> itemResponseDto.setLastBooking(mapper.map(booking, BookingRequestDto.class))
         );
-
         bookingService.getNextBookingById(item.getId(), userId, currentTime).ifPresent(
                 booking -> itemResponseDto.setNextBooking(mapper.map(booking, BookingRequestDto.class))
         );
-
         List<CommentResponseDto> comments = mapping.mapList(
                 commentService.getCommentByItem(userId, item.getId()),
                 CommentResponseDto.class
         );
-
         itemResponseDto.setComments(comments);
-
         return itemResponseDto;
     }
 
@@ -97,7 +93,6 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Item updateItem(long userId, long id, ItemRequestDto request) {
-
         Item item = itemRepository.findByIdAndOwner_Id(id, userId)
                 .orElseThrow(ItemNotFoundException::new);
         Optional.ofNullable(request.getName()).ifPresent(item::setName);

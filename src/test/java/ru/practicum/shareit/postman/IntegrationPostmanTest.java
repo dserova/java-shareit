@@ -28,6 +28,9 @@ import java.util.regex.Pattern;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class IntegrationPostmanTest {
 
+    @Value("${local.server.port}")
+    private Integer port;
+
     // deleteTimeStamp clean timestamp
     String deleteTimeStamp(String text) {
         String regex = "(,)*[\\r\\n].+\"(timestamp|start|end|created)\": \".{19,27}\"(,)*";
@@ -248,9 +251,6 @@ public class IntegrationPostmanTest {
         }
         System.out.println("TESTS COUNT: " + counter);
     }
-
-    @Value("${local.server.port}")
-    private Integer port;
 
     void template(String description, String endpoint, String RequestBody, String ResponseBody, String RequestX, MediaType RequestType, MediaType ResponseType, HttpStatus StatusResponse, HttpMethod method) throws RuntimeException {
         String userId = "X-Sharer-User-Id";

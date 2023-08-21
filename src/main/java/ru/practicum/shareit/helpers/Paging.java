@@ -16,7 +16,6 @@ public class Paging {
         if (pageSize <= 0) {
             throw new PageableBadRequestExcetion();
         }
-
         return PageRequest.of(start / pageSize, pageSize);
     }
 

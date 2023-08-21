@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.model.Filter;
+import ru.practicum.shareit.booking.model.FilterImpl;
 import ru.practicum.shareit.booking.service.BookingService;
 
 import java.util.List;
@@ -36,17 +36,17 @@ public class BookingController {
     }
 
     @GetMapping
-    public List<BookingResponseDto> getAllBooking(@RequestParam(name = "from", defaultValue = "0") int from, @RequestParam(name = "size", defaultValue = "10") int size, @RequestHeader(userIdParameterName) long userId, @RequestParam(name = "state", defaultValue = "ALL") Filter state) {
+    public List<BookingResponseDto> getAllBooking(@RequestParam(name = "from", defaultValue = "0") int from, @RequestParam(name = "size", defaultValue = "10") int size, @RequestHeader(userIdParameterName) long userId, @RequestParam(name = "state", defaultValue = "ALL") FilterImpl state) {
         return bookingService.getAllBookings(from, size, userId, state).stream().map(
                 booking -> mapper.map(booking, BookingResponseDto.class)
-                ).collect(Collectors.toList());
+        ).collect(Collectors.toList());
     }
 
     @GetMapping("/owner")
-    public List<BookingResponseDto> getAllBookingByOwner(@RequestParam(name = "from", defaultValue = "0") int from, @RequestParam(name = "size", defaultValue = "10") int size, @RequestHeader(userIdParameterName) long userId, @RequestParam(name = "state", defaultValue = "ALL") Filter state) {
+    public List<BookingResponseDto> getAllBookingByOwner(@RequestParam(name = "from", defaultValue = "0") int from, @RequestParam(name = "size", defaultValue = "10") int size, @RequestHeader(userIdParameterName) long userId, @RequestParam(name = "state", defaultValue = "ALL") FilterImpl state) {
         return bookingService.getAllBookingsByOwner(from, size, userId, state).stream().map(
                 booking -> mapper.map(booking, BookingResponseDto.class)
-                ).collect(Collectors.toList());
+        ).collect(Collectors.toList());
     }
 
     @PatchMapping("/{id}")

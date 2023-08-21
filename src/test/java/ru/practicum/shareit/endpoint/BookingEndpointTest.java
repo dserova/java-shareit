@@ -35,6 +35,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = BookingController.class)
 class BookingEndpointTest {
+    private final Booking booking = new Generate().random(Booking.class);
+
+    private final BookingRequestDto request = new ModelMapper().map(booking, BookingRequestDto.class);
 
     @Autowired
     ObjectMapper mapper;
@@ -44,9 +47,6 @@ class BookingEndpointTest {
 
     @Autowired
     private MockMvc mvc;
-
-    private final Booking booking = new Generate().random(Booking.class);
-    private final BookingRequestDto request = new ModelMapper().map(booking, BookingRequestDto.class);
 
     @Test
     void createBooking() throws Exception {

@@ -18,6 +18,7 @@ public class ItemRequestController {
     private final ModelMapper mapper;
 
     private final ItemRequestService itemRequestService;
+
     private final String userIdParameterName = "X-Sharer-User-Id";
 
     @GetMapping

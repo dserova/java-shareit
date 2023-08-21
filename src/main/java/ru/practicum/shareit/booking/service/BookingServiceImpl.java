@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Filter;
+import ru.practicum.shareit.booking.model.FilterImpl;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.error.*;
@@ -72,55 +73,51 @@ public class BookingServiceImpl implements BookingService {
     private Page<Booking> checkStateByBooker(Filter state, long userId, Pageable pageable) {
         userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
-        switch (state) {
-            case CURRENT:
-                return bookingRepository.findByBooker_IdAndStartBeforeAndEndAfterOrderByStartDesc(userId, LocalDateTime.now(), LocalDateTime.now(), pageable)
-                        .orElseThrow(BookingNotFoundException::new);
-            case PAST:
-                return bookingRepository.findByBooker_IdAndEndBeforeOrderByStartDesc(userId, LocalDateTime.now(), pageable)
-                        .orElseThrow(BookingNotFoundException::new);
-            case ALL:
-                return bookingRepository.findByBooker_IdOrderByStartDesc(userId, pageable)
-                        .orElseThrow(BookingNotFoundException::new);
-            case FUTURE:
-                return bookingRepository.findByBooker_IdAndStartAfterOrderByStartDesc(userId, LocalDateTime.now(), pageable)
-                        .orElseThrow(BookingNotFoundException::new);
-            case WAITING:
-                return bookingRepository.findByBooker_IdAndStatusOrderByStartDesc(userId, Status.WAITING, pageable)
-                        .orElseThrow(BookingNotFoundException::new);
-            case REJECTED:
-                return bookingRepository.findByBooker_IdAndStatusOrderByStartDesc(userId, Status.REJECTED, pageable)
-                        .orElseThrow(BookingNotFoundException::new);
-            default:
-                throw new FilterNotFoundException(state.toString());
+        if (state.equals(FilterImpl.CURRENT)) {
+            return bookingRepository.findByBooker_IdAndStartBeforeAndEndAfterOrderByStartDesc(userId, LocalDateTime.now(), LocalDateTime.now(), pageable)
+                    .orElseThrow(BookingNotFoundException::new);
+        } else if (state.equals(FilterImpl.PAST)) {
+            return bookingRepository.findByBooker_IdAndEndBeforeOrderByStartDesc(userId, LocalDateTime.now(), pageable)
+                    .orElseThrow(BookingNotFoundException::new);
+        } else if (state.equals(FilterImpl.ALL)) {
+            return bookingRepository.findByBooker_IdOrderByStartDesc(userId, pageable)
+                    .orElseThrow(BookingNotFoundException::new);
+        } else if (state.equals(FilterImpl.FUTURE)) {
+            return bookingRepository.findByBooker_IdAndStartAfterOrderByStartDesc(userId, LocalDateTime.now(), pageable)
+                    .orElseThrow(BookingNotFoundException::new);
+        } else if (state.equals(FilterImpl.WAITING)) {
+            return bookingRepository.findByBooker_IdAndStatusOrderByStartDesc(userId, Status.WAITING, pageable)
+                    .orElseThrow(BookingNotFoundException::new);
+        } else if (state.equals(FilterImpl.REJECTED)) {
+            return bookingRepository.findByBooker_IdAndStatusOrderByStartDesc(userId, Status.REJECTED, pageable)
+                    .orElseThrow(BookingNotFoundException::new);
         }
+        throw new FilterNotFoundException(state.toString());
     }
 
     private Page<Booking> checkStateByOwner(Filter state, long userId, Pageable pageable) {
         userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
-        switch (state) {
-            case CURRENT:
-                return bookingRepository.findByItem_Owner_IdAndStartBeforeAndEndAfterOrderByStartDesc(userId, LocalDateTime.now(), LocalDateTime.now(), pageable)
-                        .orElseThrow(BookingNotFoundException::new);
-            case PAST:
-                return bookingRepository.findByItem_Owner_IdAndEndBeforeOrderByStartDesc(userId, LocalDateTime.now(), pageable)
-                        .orElseThrow(BookingNotFoundException::new);
-            case ALL:
-                return bookingRepository.findByItem_Owner_IdOrderByStartDesc(userId, pageable)
-                        .orElseThrow(BookingNotFoundException::new);
-            case FUTURE:
-                return bookingRepository.findByItem_Owner_IdAndStartAfterOrderByStartDesc(userId, LocalDateTime.now(), pageable)
-                        .orElseThrow(BookingNotFoundException::new);
-            case WAITING:
-                return bookingRepository.findByItem_Owner_IdAndStatusOrderByStartDesc(userId, Status.WAITING, pageable)
-                        .orElseThrow(BookingNotFoundException::new);
-            case REJECTED:
-                return bookingRepository.findByItem_Owner_IdAndStatusOrderByStartDesc(userId, Status.REJECTED, pageable)
-                        .orElseThrow(BookingNotFoundException::new);
-            default:
-                throw new FilterNotFoundException(state.toString());
+        if (state.equals(FilterImpl.CURRENT)) {
+            return bookingRepository.findByItem_Owner_IdAndStartBeforeAndEndAfterOrderByStartDesc(userId, LocalDateTime.now(), LocalDateTime.now(), pageable)
+                    .orElseThrow(BookingNotFoundException::new);
+        } else if (state.equals(FilterImpl.PAST)) {
+            return bookingRepository.findByItem_Owner_IdAndEndBeforeOrderByStartDesc(userId, LocalDateTime.now(), pageable)
+                    .orElseThrow(BookingNotFoundException::new);
+        } else if (state.equals(FilterImpl.ALL)) {
+            return bookingRepository.findByItem_Owner_IdOrderByStartDesc(userId, pageable)
+                    .orElseThrow(BookingNotFoundException::new);
+        } else if (state.equals(FilterImpl.FUTURE)) {
+            return bookingRepository.findByItem_Owner_IdAndStartAfterOrderByStartDesc(userId, LocalDateTime.now(), pageable)
+                    .orElseThrow(BookingNotFoundException::new);
+        } else if (state.equals(FilterImpl.WAITING)) {
+            return bookingRepository.findByItem_Owner_IdAndStatusOrderByStartDesc(userId, Status.WAITING, pageable)
+                    .orElseThrow(BookingNotFoundException::new);
+        } else if (state.equals(FilterImpl.REJECTED)) {
+            return bookingRepository.findByItem_Owner_IdAndStatusOrderByStartDesc(userId, Status.REJECTED, pageable)
+                    .orElseThrow(BookingNotFoundException::new);
         }
+        throw new FilterNotFoundException(state.toString());
     }
 
     @Override
@@ -136,20 +133,14 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Booking createBooking(long userId, long itemId, Booking request) {
         validStartEnd(request);
-
         User user = userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
-
         request.setBooker(user);
-
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(ItemNotFoundException::new);
-
         checkIsAvailable(item);
         checkIsOwner(item, userId);
-
         request.setItem(item);
-
         request.setStatus(Status.WAITING);
         return bookingRepository.save(request);
     }
@@ -158,10 +149,8 @@ public class BookingServiceImpl implements BookingService {
     public Booking updateBooking(long userId, long id, Boolean approved) {
         Booking booking = bookingRepository.findByIdAndBooker_IdOrIdAndItem_Owner_Id(id, userId, id, userId)
                 .orElseThrow(BookingBadRequestExcetion::new);
-
         checkIsNotOwner(booking.getItem(), userId);
         approve(booking, approved);
-
         return bookingRepository.save(booking);
     }
 

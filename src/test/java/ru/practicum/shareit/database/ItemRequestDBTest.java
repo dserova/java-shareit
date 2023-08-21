@@ -27,11 +27,12 @@ import static org.hamcrest.core.IsNull.notNullValue;
 @Transactional
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @TestPropertySource(properties = {"db.name=test"})
-@SpringBootTest(
-        webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 public class ItemRequestDBTest {
     private final UserService userService;
+
     private final ItemRequestService itemRequestService;
+
     private final ItemService itemService;
 
     private final Item item = new Generate().random(Item.class);

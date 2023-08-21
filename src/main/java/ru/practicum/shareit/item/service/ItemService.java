@@ -15,8 +15,6 @@ public interface ItemService {
 
     Item createItem(long userId, Item item, Long itemRequestId);
 
-//    Item createItem(long userId, Item item, ItemRequest itemRequest);
-
     Item updateItem(long userId, long id, ItemRequestDto itemDtoRequest);
 
     void deleteItem(long userId, long id);
@@ -25,7 +23,7 @@ public interface ItemService {
 
     List<Item> search(long userId, String partOfName);
 
-    Page<Item> search(int start, int size,long userId, String partOfName);
+    Page<Item> search(int start, int size, long userId, String partOfName);
 
     ItemResponseDto enrichResponse(Item item, long userId, LocalDateTime currentTime);
 }
