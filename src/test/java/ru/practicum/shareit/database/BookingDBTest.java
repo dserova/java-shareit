@@ -114,10 +114,10 @@ public class BookingDBTest {
 
     @Test
     void getAllBookingsFail() {
-        Filter DummyFilter = Mockito.mock(Filter.class);
+        Filter dummyFilter = Mockito.mock(Filter.class);
         Booking newItem = before();
         try {
-            bookingService.getAllBookings(0, 1, newItem.getItem().getOwner().getId(), DummyFilter);
+            bookingService.getAllBookings(0, 1, newItem.getItem().getOwner().getId(), dummyFilter);
             throw new RuntimeException();
         } catch (FilterNotFoundException e) {
             assertThat(e.getClass(), equalTo(FilterNotFoundException.class));
@@ -126,10 +126,10 @@ public class BookingDBTest {
 
     @Test
     void getAllBookingsByOwnerFail() {
-        Filter DummyFilter = Mockito.mock(Filter.class);
+        Filter dummyFilter = Mockito.mock(Filter.class);
         Booking newItem = before();
         try {
-            bookingService.getAllBookingsByOwner(0, 1, newItem.getItem().getOwner().getId(), DummyFilter);
+            bookingService.getAllBookingsByOwner(0, 1, newItem.getItem().getOwner().getId(), dummyFilter);
             throw new RuntimeException();
         } catch (FilterNotFoundException e) {
             assertThat(e.getClass(), equalTo(FilterNotFoundException.class));
