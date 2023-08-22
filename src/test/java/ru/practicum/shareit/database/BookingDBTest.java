@@ -2,9 +2,6 @@ package ru.practicum.shareit.database;
 
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
@@ -12,7 +9,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Filter;
-import ru.practicum.shareit.booking.model.FilterImpl;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.error.FilterNotFoundException;
@@ -31,7 +27,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.IsNull.notNullValue;
 
-@ExtendWith(MockitoExtension.class)
 @Transactional
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @TestPropertySource(properties = {"db.name=test"})
@@ -71,7 +66,7 @@ public class BookingDBTest {
     @Test
     void getAllBookings() {
         Booking newItem = before();
-        Page<Booking> resultElement = bookingService.getAllBookings(0, 1, newItem.getBooker().getId(), FilterImpl.ALL);
+        Page<Booking> resultElement = bookingService.getAllBookings(0, 1, newItem.getBooker().getId(), Filter.ALL);
         assertThat(resultElement.getContent().get(0).getId(), notNullValue());
         assertThat(resultElement.getContent().get(0).getName(), equalTo(booking.getName()));
         assertThat(resultElement.getContent().get(0).getDescription(), equalTo(booking.getDescription()));
@@ -83,7 +78,7 @@ public class BookingDBTest {
     @Test
     void getAllBookingsByOwner() {
         Booking newItem = before();
-        Page<Booking> resultElement = bookingService.getAllBookingsByOwner(0, 1, newItem.getItem().getOwner().getId(), FilterImpl.ALL);
+        Page<Booking> resultElement = bookingService.getAllBookingsByOwner(0, 1, newItem.getItem().getOwner().getId(), Filter.ALL);
         assertThat(resultElement.getContent().get(0).getId(), notNullValue());
         assertThat(resultElement.getContent().get(0).getName(), equalTo(booking.getName()));
         assertThat(resultElement.getContent().get(0).getDescription(), equalTo(booking.getDescription()));
@@ -114,10 +109,9 @@ public class BookingDBTest {
 
     @Test
     void getAllBookingsFail() {
-        Filter dummyFilter = Mockito.mock(Filter.class);
         Booking newItem = before();
         try {
-            bookingService.getAllBookings(0, 1, newItem.getItem().getOwner().getId(), dummyFilter);
+            bookingService.getAllBookings(0, 1, newItem.getItem().getOwner().getId(), Filter.TEST);
             throw new RuntimeException();
         } catch (FilterNotFoundException e) {
             assertThat(e.getClass(), equalTo(FilterNotFoundException.class));
@@ -126,10 +120,9 @@ public class BookingDBTest {
 
     @Test
     void getAllBookingsByOwnerFail() {
-        Filter dummyFilter = Mockito.mock(Filter.class);
         Booking newItem = before();
         try {
-            bookingService.getAllBookingsByOwner(0, 1, newItem.getItem().getOwner().getId(), dummyFilter);
+            bookingService.getAllBookingsByOwner(0, 1, newItem.getItem().getOwner().getId(), Filter.TEST);
             throw new RuntimeException();
         } catch (FilterNotFoundException e) {
             assertThat(e.getClass(), equalTo(FilterNotFoundException.class));
