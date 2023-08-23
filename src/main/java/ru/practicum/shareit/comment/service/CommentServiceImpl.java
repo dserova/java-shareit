@@ -17,15 +17,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
     private final BookingRepository bookingRepository;
+
     private final CommentRepository commentRepository;
 
     @Override
     public Comment createComment(long userId, long itemId, @NonNull Comment comment) {
         Booking b = bookingRepository.findFirstByBooker_IdAndEndBeforeOrderByStartDesc(userId, LocalDateTime.now()).orElseThrow(BookingBadRequestExcetion::new);
-
         comment.setAuthor(b.getBooker());
         comment.setItem(b.getItem());
-
         return commentRepository.save(comment);
     }
 

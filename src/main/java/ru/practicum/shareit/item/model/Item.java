@@ -1,6 +1,9 @@
 package ru.practicum.shareit.item.model;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.Setter;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
@@ -11,8 +14,6 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @Setter
 @Valid
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "items", schema = "Public", uniqueConstraints = {@UniqueConstraint(columnNames = {"name"})})
@@ -36,5 +37,6 @@ public class Item {
     @JoinColumn(name = "user_id")
     private User owner;
     @OneToOne
+    @JoinColumn(name = "request_id")
     private ItemRequest request;
 }

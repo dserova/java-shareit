@@ -7,13 +7,13 @@ import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 public class ShareItApp {
+    public static void main(String[] args) {
+        SpringApplication.run(ShareItApp.class, args);
+    }
+
     @Bean
     public ModelMapper modelMapper() {
         return new ModelMapper();
-    }
-
-    public static void main(String[] args) {
-        SpringApplication.run(ShareItApp.class, args);
     }
 
 }

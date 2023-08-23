@@ -13,7 +13,6 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-
     private final UserRepository userRepository;
 
     @Override
@@ -30,10 +29,8 @@ public class UserServiceImpl implements UserService {
     public User updateUser(long id, UserRequestDto request) {
         User user = userRepository.findById(id)
                 .orElseThrow(UserNotFoundException::new);
-
         Optional.ofNullable(request.getName()).ifPresent(user::setName);
         Optional.ofNullable(request.getEmail()).ifPresent(user::setEmail);
-
         return userRepository.save(user);
     }
 

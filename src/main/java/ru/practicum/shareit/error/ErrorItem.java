@@ -9,9 +9,9 @@ import lombok.Setter;
 @Setter
 @Getter
 public class ErrorItem {
-
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String code;
+
     @JsonProperty("error")
     private String message;
 

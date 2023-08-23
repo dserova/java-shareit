@@ -1,6 +1,9 @@
 package ru.practicum.shareit.user.model;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.Valid;
@@ -10,8 +13,6 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @Setter
 @Valid
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "users", schema = "Public", uniqueConstraints = {@UniqueConstraint(columnNames = {"email"})})

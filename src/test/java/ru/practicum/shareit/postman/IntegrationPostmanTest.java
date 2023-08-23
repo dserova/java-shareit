@@ -1,4 +1,4 @@
-package ru.practicum.shareit;
+package ru.practicum.shareit.postman;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,10 +14,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import ru.practicum.shareit.ShareItApp;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,13 +26,15 @@ import java.util.regex.Pattern;
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class ShareItTests {
+public class IntegrationPostmanTest {
+
+    @Value("${local.server.port}")
+    private Integer port;
 
     // deleteTimeStamp clean timestamp
     String deleteTimeStamp(String text) {
         String regex = "(,)*[\\r\\n].+\"(timestamp|start|end|created)\": \".{19,27}\"(,)*";
-        String ret = text.replaceAll(regex, "");
-        return ret;
+        return text.replaceAll(regex, "");
     }
 
     void delay(String text) {
@@ -130,8 +132,6 @@ public class ShareItTests {
                 // get envs
                 LocalDateTime start = LocalDateTime.now();
                 LocalDateTime end = LocalDateTime.now();
-                System.out.println(start);
-                System.out.println(end);
                 JsonNode events = request1.get("event");
                 for (JsonNode event : events) {
                     if (event.get("script").has("exec") && event.get("listen").asText().equals("prerequest")) {
@@ -190,8 +190,17 @@ public class ShareItTests {
                 } else {
                     continue;
                 }
+
                 MediaType reqMedia = MediaType.valueOf(reqcontent);
                 MediaType resMedia = MediaType.valueOf(rescontent);
+
+                if (reqbody.isEmpty() && reqcontent.equals("*/*")) {
+                    reqMedia = MediaType.TEXT_PLAIN;
+                }
+
+                if (reqbody.contains("{") && reqcontent.equals("*/*")) {
+                    reqMedia = MediaType.APPLICATION_JSON;
+                }
 
                 if (reqbody.isEmpty() && reqcontent.equals("application/json")) {
                     reqbody = "{}";
@@ -204,6 +213,10 @@ public class ShareItTests {
                 if (resbody.isEmpty() && rescontent.equals("application/json")) {
                     resbody = "{}";
                 }
+
+                // language fix
+                // resbody = resbody.replaceAll("must be a well-formed email address", "должно иметь формат адреса электронной почты");
+                // resbody = resbody.replaceAll("must not be blank", "не должно быть пустым");
 
                 // not allowed timestamp in struct compare
                 resbody = deleteTimeStamp(resbody);
@@ -239,9 +252,6 @@ public class ShareItTests {
         System.out.println("TESTS COUNT: " + counter);
     }
 
-    @Value("${local.server.port}")
-    private Integer port;
-
     void template(String description, String endpoint, String RequestBody, String ResponseBody, String RequestX, MediaType RequestType, MediaType ResponseType, HttpStatus StatusResponse, HttpMethod method) throws RuntimeException {
         String userId = "X-Sharer-User-Id";
         if (RequestX.isBlank()) {
@@ -252,7 +262,7 @@ public class ShareItTests {
         // Test with WebTest
         WebTestClient client = WebTestClient.bindToServer().baseUrl("http://localhost:" + port).build();
         client.method(method).uri(endpoint)
-                .header("Content-Type", RequestType.toString())
+                .contentType(RequestType)
                 .header(userId, RequestX)
                 .bodyValue(RequestBody)
                 .exchange()
@@ -276,12 +286,12 @@ public class ShareItTests {
                 );
     }
 
-
     @Test
-    void caseTests14() throws IOException, SQLException {
-        // sprint13
-        // TESTS COUNT: 112
-        checkByPostmanExportFileCollection("postman/Sprint 14 ShareIt (add-bookings).json");
+    void caseTests15() throws IOException {
+        // sprint15
+        // TESTS COUNT: 139
+        checkByPostmanExportFileCollection("postman/Sprint 15 ShareIt (add-item-requests).json");
     }
 
 }
+

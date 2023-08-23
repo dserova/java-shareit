@@ -3,7 +3,6 @@ package ru.practicum.shareit.item.controller;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.comment.dto.CommentRequestDto;
 import ru.practicum.shareit.comment.dto.CommentResponseDto;
 import ru.practicum.shareit.comment.model.Comment;
@@ -21,20 +20,19 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @RequestMapping("/items")
 public class ItemController {
-
     private final ModelMapper mapper;
 
     private final ItemService itemService;
-
-    private final BookingService bookingService;
 
     private final CommentService commentService;
 
     private final String userIdParameterName = "X-Sharer-User-Id";
 
     @GetMapping
-    public List<ItemResponseDto> getAllItems(@RequestHeader(userIdParameterName) long userId) {
-        return itemService.getAllItems(userId).stream().map(item -> itemService.enrichResponse(item, userId, LocalDateTime.now())).collect(Collectors.toList());
+    public List<ItemResponseDto> getAllItems(@RequestParam(name = "from", defaultValue = "0") int from, @RequestParam(name = "size", defaultValue = "10") int size, @RequestHeader(userIdParameterName) long userId) {
+        return itemService.getAllItems(from, size, userId).stream().map(
+                item -> itemService.enrichResponse(item, userId, LocalDateTime.now())
+        ).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
@@ -46,7 +44,7 @@ public class ItemController {
     @PostMapping
     public ItemRequestDto createItem(@RequestHeader(userIdParameterName) long userId, @RequestBody ItemRequestDto itemRequestDto) {
         Item request = mapper.map(itemRequestDto, Item.class);
-        Item item = itemService.createItem(userId, request);
+        Item item = itemService.createItem(userId, request, itemRequestDto.getRequestId());
         return mapper.map(item, ItemRequestDto.class);
     }
 
@@ -62,8 +60,8 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<ItemRequestDto> search(@RequestHeader(userIdParameterName) long userId, @RequestParam(name = "text", defaultValue = "__{{ERROR_EXCEPTION}}__") String partOfName) {
-        return itemService.search(userId, partOfName).stream().map(item -> mapper.map(item, ItemRequestDto.class)).collect(Collectors.toList());
+    public List<ItemRequestDto> search(@RequestParam(name = "from", defaultValue = "0") int from, @RequestParam(name = "size", defaultValue = "10") int size, @RequestHeader(userIdParameterName) long userId, @RequestParam(name = "text", defaultValue = "") String partOfName) {
+        return itemService.search(from, size, userId, partOfName).stream().map(item -> mapper.map(item, ItemRequestDto.class)).collect(Collectors.toList());
     }
 
     @PostMapping("/{id}/comment")

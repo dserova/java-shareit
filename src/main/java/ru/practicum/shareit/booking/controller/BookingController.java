@@ -36,15 +36,17 @@ public class BookingController {
     }
 
     @GetMapping
-    public List<BookingResponseDto> getAllBooking(@RequestHeader(userIdParameterName) long userId, @RequestParam(name = "state", defaultValue = "ALL") Filter state) {
-        return bookingService.getAllBookings(userId, state).stream().map(booking -> mapper.map(booking, BookingResponseDto.class))
-                .collect(Collectors.toList());
+    public List<BookingResponseDto> getAllBooking(@RequestParam(name = "from", defaultValue = "0") int from, @RequestParam(name = "size", defaultValue = "10") int size, @RequestHeader(userIdParameterName) long userId, @RequestParam(name = "state", defaultValue = "ALL") Filter state) {
+        return bookingService.getAllBookings(from, size, userId, state).stream().map(
+                booking -> mapper.map(booking, BookingResponseDto.class)
+        ).collect(Collectors.toList());
     }
 
     @GetMapping("/owner")
-    public List<BookingResponseDto> getAllBookingByOwner(@RequestHeader(userIdParameterName) long userId, @RequestParam(name = "state", defaultValue = "ALL") Filter state) {
-        return bookingService.getAllBookingsByOwner(userId, state).stream().map(booking -> mapper.map(booking, BookingResponseDto.class))
-                .collect(Collectors.toList());
+    public List<BookingResponseDto> getAllBookingByOwner(@RequestParam(name = "from", defaultValue = "0") int from, @RequestParam(name = "size", defaultValue = "10") int size, @RequestHeader(userIdParameterName) long userId, @RequestParam(name = "state", defaultValue = "ALL") Filter state) {
+        return bookingService.getAllBookingsByOwner(from, size, userId, state).stream().map(
+                booking -> mapper.map(booking, BookingResponseDto.class)
+        ).collect(Collectors.toList());
     }
 
     @PatchMapping("/{id}")

@@ -145,6 +145,36 @@ public class ApiExceptionHandler {
         );
     }
 
+    @ExceptionHandler(ItemRequestNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorItem handle(ItemRequestNotFoundException e) throws NoSuchMethodException {
+        Method currentMethod = getClass().getMethod(handleName, e.getClass());
+        return handleCustomErrorItem(
+                Objects.requireNonNull(AnnotationUtils.getAnnotation(e.getClass(), ResponseStatus.class)).reason(),
+                currentMethod.getAnnotation(ResponseStatus.class).value()
+        );
+    }
+
+    @ExceptionHandler(ItemRequestBadRequestExcetion.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorItem handle(ItemRequestBadRequestExcetion e) throws NoSuchMethodException {
+        Method currentMethod = getClass().getMethod(handleName, e.getClass());
+        return handleCustomErrorItem(
+                Objects.requireNonNull(AnnotationUtils.getAnnotation(e.getClass(), ResponseStatus.class)).reason(),
+                currentMethod.getAnnotation(ResponseStatus.class).value()
+        );
+    }
+
+    @ExceptionHandler(PageableBadRequestExcetion.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorItem handle(PageableBadRequestExcetion e) throws NoSuchMethodException {
+        Method currentMethod = getClass().getMethod(handleName, e.getClass());
+        return handleCustomErrorItem(
+                Objects.requireNonNull(AnnotationUtils.getAnnotation(e.getClass(), ResponseStatus.class)).reason(),
+                currentMethod.getAnnotation(ResponseStatus.class).value()
+        );
+    }
+
     @ExceptionHandler(FilterNotFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorItem handle(FilterNotFoundException e) throws NoSuchMethodException {
