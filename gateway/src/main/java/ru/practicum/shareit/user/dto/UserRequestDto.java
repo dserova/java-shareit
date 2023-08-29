@@ -6,10 +6,10 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
+
 @Data
 @NoArgsConstructor
 public class UserRequestDto {
-    @NotBlank
     private long id;
     @NotBlank
     private String name;

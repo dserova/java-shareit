@@ -8,12 +8,9 @@ import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 
 @Getter
 @Setter
-@Valid
 @NoArgsConstructor
 @Entity
 @Table(name = "items", schema = "Public", uniqueConstraints = {@UniqueConstraint(columnNames = {"name"})})
@@ -23,11 +20,9 @@ public class Item {
     @Column(name = "item_id")
     private long id;
     @NonNull
-    @NotBlank
     @Column(name = "name")
     private String name;
     @NonNull
-    @NotBlank
     @Column(name = "description")
     private String description;
     @NonNull

@@ -8,12 +8,10 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
-import javax.validation.Valid;
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@Valid
 @NoArgsConstructor
 @Entity
 @Table(name = "booking", schema = "Public")

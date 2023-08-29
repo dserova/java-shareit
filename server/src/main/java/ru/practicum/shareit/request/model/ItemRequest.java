@@ -7,13 +7,10 @@ import lombok.Setter;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@Valid
 @NoArgsConstructor
 @Entity
 @Table(name = "requests", schema = "Public")
@@ -23,7 +20,6 @@ public class ItemRequest {
     @Column(name = "request_id")
     private long id;
     @NonNull
-    @NotBlank
     @Column(name = "description")
     private String description;
     @NonNull

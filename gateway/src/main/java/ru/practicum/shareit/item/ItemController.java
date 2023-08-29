@@ -7,8 +7,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentRequestDto;
-import ru.practicum.shareit.item.dto.ItemRequestDto;
+import ru.practicum.shareit.item.dto.ItemRequestCreateDto;
+import ru.practicum.shareit.item.dto.ItemRequestUpdateDto;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
@@ -39,17 +41,17 @@ public class ItemController {
 
     @PostMapping
     public ResponseEntity<Object> createItem(@RequestHeader(userIdParameterName) long userId,
-                                             @RequestBody ItemRequestDto itemRequestDto) {
-        log.info("POST userId={}, itemRequestDto={}", userId, itemRequestDto);
-        return itemClient.createItem(userId, itemRequestDto);
+                                             @Valid @RequestBody ItemRequestCreateDto itemRequestCreateDto) {
+        log.info("POST userId={}, itemRequestDto={}", userId, itemRequestCreateDto);
+        return itemClient.createItem(userId, itemRequestCreateDto);
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<Object> updateItem(@RequestHeader(userIdParameterName) long userId,
                                              @PathVariable(name = "id") long itemId,
-                                             @RequestBody ItemRequestDto itemRequestDto) {
-        log.info("PATCH /{id} userId={}, itemId={}, itemRequestDto={}", userId, itemId, itemRequestDto);
-        return itemClient.updateItem(userId, itemId, itemRequestDto);
+                                             @Valid @RequestBody ItemRequestUpdateDto itemRequestUpdateDto) {
+        log.info("PATCH /{id} userId={}, itemId={}, itemRequestPatchDto={}", userId, itemId, itemRequestUpdateDto);
+        return itemClient.updateItem(userId, itemId, itemRequestUpdateDto);
     }
 
     @DeleteMapping("/{id}")
@@ -71,7 +73,7 @@ public class ItemController {
     @PostMapping("/{id}/comment")
     public ResponseEntity<Object> createComment(@RequestHeader(userIdParameterName) long userId,
                                                 @PathVariable(name = "id") long itemId,
-                                                @RequestBody CommentRequestDto request) {
+                                                @Valid @RequestBody CommentRequestDto request) {
         log.info("POST /{id}/comment userId={}, itemId={}, request={}", userId, itemId, request);
         return itemClient.createComment(userId, itemId, request);
     }

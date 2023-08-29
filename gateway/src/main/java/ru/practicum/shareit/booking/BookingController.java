@@ -11,6 +11,7 @@ import ru.practicum.shareit.booking.dto.Filter;
 import ru.practicum.shareit.error.BookingBadRequestException;
 import ru.practicum.shareit.error.FilterNotFoundException;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
@@ -71,7 +72,7 @@ public class BookingController {
 
     @PostMapping
     public ResponseEntity<Object> createBooking(@RequestHeader(userIdParameterName) long userId,
-                                                @RequestBody BookingRequestDto bookingRequestDto) {
+                                                @Valid @RequestBody BookingRequestDto bookingRequestDto) {
         validStartEnd(bookingRequestDto);
         log.info("POST bookingId={}, userId={}", bookingRequestDto, userId);
         return bookingClient.createBooking(userId, bookingRequestDto);

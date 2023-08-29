@@ -52,9 +52,9 @@ services:
     command:
       - "postgres"
       - "-c"
-      - "max_connections=10"
+      - "max_connections=1000"
       - "-c"
-      - "shared_buffers=20MB"
+      - "shared_buffers=100MB"
       - "-c"
       - "effective_cache_size=200MB"
       - "-c"

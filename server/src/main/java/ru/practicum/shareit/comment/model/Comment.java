@@ -7,13 +7,10 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@Valid
 @NoArgsConstructor
 @Entity
 @Table(name = "comment", schema = "Public")
@@ -22,7 +19,6 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id")
     private long id;
-    @NotBlank
     @Column(name = "text")
     private String text;
     @JoinColumn(name = "item_id")

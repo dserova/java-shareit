@@ -213,10 +213,6 @@ public class IntegrationPostmanTest {
                     resbody = "{}";
                 }
 
-                // language fix
-                // resbody = resbody.replaceAll("must be a well-formed email address", "должно иметь формат адреса электронной почты");
-                // resbody = resbody.replaceAll("must not be blank", "не должно быть пустым");
-
                 // not allowed timestamp in struct compare
                 resbody = deleteTimeStamp(resbody);
                 System.out.println("\n\n============================================\n\n");
@@ -288,7 +284,7 @@ public class IntegrationPostmanTest {
     @Test
     void caseTests16() throws IOException {
         // sprint16
-        // TESTS COUNT: 13/139
+        // TESTS COUNT: 26/139
         checkByPostmanExportFileCollection("postman/Sprint 16 ShareIt-gateway.json");
     }
 

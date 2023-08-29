@@ -1,4 +1,4 @@
-package ru.practicum.shareit.database;
+package ru.practicum.shareit.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
@@ -13,7 +13,7 @@ import static org.hamcrest.Matchers.equalTo;
 
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @SpringBootTest(classes = ShareItGateway.class)
-public class BookingDBTest {
+public class BookingTest {
 
     private final BookingController bookingController;
 

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -114,4 +115,15 @@ public class ApiExceptionHandler {
                 currentMethod.getAnnotation(ResponseStatus.class).value()
         );
     }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorItem handle(MethodArgumentNotValidException e) throws NoSuchMethodException {
+        Method currentMethod = getClass().getMethod(handleName, e.getClass());
+        return handleCustomErrorItem(
+                Objects.requireNonNull(e.getFieldError()).getField() + " - " + Objects.requireNonNull(e.getFieldErrors().get(0)).getDefaultMessage(),
+                currentMethod.getAnnotation(ResponseStatus.class).value()
+        );
+    }
+
 }

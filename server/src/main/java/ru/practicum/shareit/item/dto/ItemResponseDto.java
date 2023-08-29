@@ -5,16 +5,13 @@ import lombok.NoArgsConstructor;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.comment.dto.CommentResponseDto;
 
-import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Data
 @NoArgsConstructor
 public class ItemResponseDto {
     private long id;
-    @NotBlank
     private String name;
-    @NotBlank
     private String description;
     private Boolean available;
     private Long requestId;

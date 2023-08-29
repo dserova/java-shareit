@@ -9,7 +9,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.item.model.Item;
 
-import javax.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,7 +29,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             "trim(:text)<>'' " +
             "and " +
             "upper(concat(i.name, ',,,', i.description)) like upper(concat('%', :text, '%'))")
-    Optional<Page<Item>> search(@NonNull @NotBlank @Param("text") String text, Pageable pageable);
+    Optional<Page<Item>> search(@NonNull @Param("text") String text, Pageable pageable);
 
     @Query("select i from Item i " +
             "where " +
@@ -39,5 +38,5 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             "trim(:text)<>'' " +
             "and " +
             "upper(concat(i.name, ',,,', i.description)) like upper(concat('%', :text, '%'))")
-    Optional<List<Item>> search(@NonNull @NotBlank @Param("text") String text);
+    Optional<List<Item>> search(@NonNull @Param("text") String text);
 }
